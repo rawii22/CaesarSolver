@@ -6,7 +6,6 @@
 #include <string>
 
 //This class accepts a ciphertext and uses a statistical attack to figure out the plaintext.
-//It will print out the top five most likely shift values.
 class CaesarSolver
 {
     private:
