@@ -5,8 +5,6 @@
 #include <string>
 #include "CaesarSolver.h"
 
-const double ENGLISH_ALPHABET_FREQUENCIES [26] = {0.080, 0.015, 0.030, 0.040, 0.130, 0.020, 0.015, 0.060, 0.065, 0.005, 0.005, 0.035, 0.030, 0.070, 0.080, 0.020, 0.002, 0.065, 0.060, 0.090, 0.030, 0.010, 0.015, 0.005, 0.020, 0.002};
-
 // Returns an array with the frequency of each character in a given string
 int* CaesarSolver::getFrequencyOfLetters(std::string text){
     int* letterFrequency = new int[27]; // Slot 27 is reserved for spaces
@@ -54,74 +52,74 @@ double* CaesarSolver::getCorrelationOfFrequencies(std::string text){
     return correlationFrequencies;
 }
 
-// Returns an array of five indices. The indices represent the positions of the five highest values
-// in the input array.
-int* CaesarSolver::getTopFive(double* frequencies){
-    // Make and initialize an array for the top 5 values
-    int* topFive = new int[5];
-    for (int i = 0; i < 5; i++){
-        topFive[i] = -1;
+// Returns an array of INDICES. The indices represent the positions of the highest values
+// in the input array. The amount of top results to be returned is stored in topAmount.
+int* CaesarSolver::getTopShifts(double* frequencies, int topAmount){
+    // Make and initialize an array for the top values
+    int* topResults = new int[topAmount];
+    for (int i = 0; i < topAmount; i++){
+        topResults[i] = -1;
     }
 
     double max;
     int maxIndex;
-    bool isInTopFive;
+    bool isInTopList;
 
-    // For each value to be in top 5
-    for (int i = 0; i < 5; i ++){
+    // For each value to be in top list
+    for (int i = 0; i < topAmount; i ++){
         max = 0.0;
 
         // Check if the value is the largest value in the array
         for (int j = 0; j < 26; j++){
             // If its the largest value
             if(frequencies[j] > max){
-                // Check if its already in the top 5
-                isInTopFive = false;
-                for (int k = 0; k < 5; k++){
-                    if (j == topFive[k]){
-                        isInTopFive = true;
+                // Check if its already in the top list
+                isInTopList = false;
+                for (int k = 0; k < topAmount; k++){
+                    if (j == topResults[k]){
+                        isInTopList = true;
                     }
                 }
                 // If its not, set it to the new largest
-                if (!isInTopFive){
+                if (!isInTopList){
                     max = frequencies[j];
                     maxIndex = j;
                 }        
             }
         }
-        // Store the current largest value in the top 5 array
-        topFive[i] = maxIndex;
+        // Store the current largest value in the top results array
+        topResults[i] = maxIndex;
     }
 
-    return topFive;
+    return topResults;
 }
 
-// Prints the top five most likely shift values, the frequency it matched
+// Prints the top most likely shift values, the frequency it matched
 // with English letter frequency using that shift, and the plaintext
 // translation for each shift.
 void CaesarSolver::printResults(){
-    std::cout << "\nTop Five:\n";
-    for (int i = 0; i < 5; i++)
+    std::cout << "\nTop " << TOP_NUM << " Shifts:\n";
+    for (int i = 0; i < TOP_NUM; i++)
     {
-        std::cout << "Shift = " << topFive[i] << "\tFrequency = " << correlationFrequencies[topFive[i]] << "\n";
+        std::cout << "Shift = " << topShifts[i] << "\tFrequency = " << correlationFrequencies[topShifts[i]] << "\n";
         // For each letter in the encrypted text, shift and print
-        std::cout << unshift(topFive[i]);
+        std::cout << unshift(encryptedText, topShifts[i]);
         std::cout << "\n\n";
     }
 }
 
-std::string CaesarSolver::unshift(int shift)
+std::string CaesarSolver::unshift(std::string ciphertext, int shift)
 {
     int storeForShift;
     std::string result = "";
-    for (char j : encryptedText){
+    for (char i : ciphertext){
         // If there is a space, there is no shift needed
-        if (j == ' '){
+        if (i == ' '){
             result += ' ';
             continue;
         }
         // Shift character
-        storeForShift = convertLetterToNumber(j);
+        storeForShift = convertLetterToNumber(i);
         storeForShift -= shift;
         // Account for shift overflowing
         if (storeForShift < 0){
@@ -135,5 +133,5 @@ std::string CaesarSolver::unshift(int shift)
 // Returns unshifted string using the top result from the statistical attack
 std::string CaesarSolver::getDecodedStringWithTopFrequency()
 {
-    return unshift(topFive[0]);
+    return unshift(encryptedText, topShifts[0]);
 }
