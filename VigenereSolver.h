@@ -27,7 +27,7 @@ class VigenereSolver
                     upperCiphertext += i;
                 }
             }
-            encryptedText = ciphertext;
+            encryptedText = upperCiphertext;
 
             promptPeriod();
         }
