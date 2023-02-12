@@ -12,7 +12,7 @@ int main(){
         getline(std::cin, encryptedText);
     }
 
-    VigenereSolver vigenereSolver(encryptedText, 2);
+    VigenereSolver vigenereSolver(encryptedText);
     //If the results seem a little off, try writing the above line as:
     // VigenereSolver vigenereSolver(encryptedText, 2);
     // Increasing the parameter at the end will force the solver to print

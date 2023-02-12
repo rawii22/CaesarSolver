@@ -66,12 +66,12 @@ void VigenereSolver::promptPeriod()
         while(!valid)
         {
             getline(std::cin, buffer);
-            if (buffer.compare("y") == 0)
+            if (buffer.compare("Y") == 0 || buffer.compare("y") == 0)
             {
                 valid = true;
                 satisfied = true;
             }
-            else if (buffer.compare("n") == 0)
+            else if (buffer.compare("N") == 0 || buffer.compare("n") == 0)
             {
                 valid = true;
             }
