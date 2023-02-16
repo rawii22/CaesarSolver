@@ -1,10 +1,9 @@
 #include "CaesarSolver.h"
 #include "VigenereSolver.h"
 #include <string>
-#include <regex>
 #include <cmath>
 
-// Index of Coincidence calculator
+// Index of Coincidence (IC) Calculator
 // This is used to calculate if the period of a key is valid. If this returns a value greater than 0.06,
 // then it is more likely that the period of the alphabet is one. If this is true for the majority of
 // the alphabets in a Vigenere cipher, then you have most likely selected a valid period length.
@@ -27,60 +26,70 @@ double VigenereSolver::ICCalculator(std::string text){
     return total;
 }
 
-void VigenereSolver::promptPeriod()
-{
-    int periodIn;
-    bool satisfied = false;
-    std::string buffer;
-    std::regex onlyInt("^[0-9]*$");
+// Determines the most likely period using Index of Correlation (IC) Values
+void VigenereSolver::calculateIdealPeriod(){
+    double originalTextIC = ICCalculator(encryptedText);
 
-    while(!satisfied)
-    {
-        periodIn = 0;
+    PERIOD = compareICToPeriodTable(originalTextIC);
+    bool periodNotCorrect = true;
+    int numberOfAlphabetsSuggestingPeriodOfOne;
+    bool add = true;
+    int addBy = 1;
 
-        while (periodIn < 1)
-        {
-            std::cout << "\nPlease enter the period (length) of the key phrase:\n";
-            getline(std::cin, buffer);
-            if (!buffer.empty() && std::regex_match(buffer, onlyInt)) // Obsessive fool-proofing user input before conversion to int.
-            {
-                periodIn = std::stoi(buffer);
-            }
-        }
 
-        std::cout << "\nTesting ciphertext with period " << periodIn << ":\n\n";
-        PERIOD = periodIn;
-        if (alphabets != NULL) // Make sure to de-allocate memory if alphabets has already been tested!
+    while (periodNotCorrect){
+        if (alphabets != NULL){ // Make sure to de-allocate memory if alphabets has already been tested!
             delete [] alphabets;
+        }
 
         alphabets = splitAlphabets();
-        
-        // Display all IC values for each alphabet before continuing with decoding
-        for (int i = 0; i < periodIn; i++){
-            std::cout << alphabets[i] << "\t\tIC: " << VigenereSolver::ICCalculator(alphabets[i]);
-            std::cout << "\n";
+        numberOfAlphabetsSuggestingPeriodOfOne = 0;
+
+        // Counts the number of split alphabets that suggests a period of 1
+        for (int i = 0; i < PERIOD; i++){
+            if (compareICToPeriodTable(ICCalculator(alphabets[i])) == 1){
+                numberOfAlphabetsSuggestingPeriodOfOne++;
+            }
         }
-        std::cout << "\nAn IC above or near 0.06 for most rows indicates a good period.\n\n";
-        std::cout << "Would you like to continue decoding the ciphertext with period " << periodIn << "? (y/n)\n";
-        bool valid = false;
-        while(!valid)
-        {
-            getline(std::cin, buffer);
-            if (buffer.compare("Y") == 0 || buffer.compare("y") == 0)
-            {
-                valid = true;
-                satisfied = true;
+
+        // If at least half of the alphabets suggest a period of 1, exit the loop
+        if (numberOfAlphabetsSuggestingPeriodOfOne >= PERIOD/2){
+            periodNotCorrect = false;
+        }
+        else{ // Otherwise periodically go through the adjacent periods and calcualte their values
+            if (add){
+                PERIOD += addBy;
+                add = false;
             }
-            else if (buffer.compare("N") == 0 || buffer.compare("n") == 0)
-            {
-                valid = true;
+            else {
+                PERIOD -= addBy;
+                add = true;
             }
-            else
-            {
-                std::cout << "Please enter a valid answer (y/n):\n";
-            }
+            addBy += 1;
+        }
+        // If the calculations fail, set period to -1 and exit
+        if (PERIOD <= 0){
+            PERIOD = -1;
+            return;
         }
     }
+
+    std::cout << "Your period was calculated to be " << PERIOD << "\n\n";
+}
+
+// Compares the IC value to all the values in the table and returns the period that it most closely correlates with
+int VigenereSolver::compareICToPeriodTable(double ICValue){
+    int mostLikelyPeriod = 1;
+    double mostLikelyIC = ENGLISH_LANGUAGE_IC_VALUES[0];
+
+    for (int i = 0; i < NUMBER_OF_IC_VALUES; i++){
+        if (std::abs(ENGLISH_LANGUAGE_IC_VALUES[i] - ICValue) < std::abs(mostLikelyIC - ICValue)){
+            mostLikelyPeriod = i + 1;
+            mostLikelyIC = ENGLISH_LANGUAGE_IC_VALUES[i];
+        }
+    }
+
+    return mostLikelyPeriod;
 }
 
 void VigenereSolver::printResults()
@@ -123,6 +132,7 @@ void VigenereSolver::printResults()
     delete[] possibleDecodedAlphabets;
 }
 
+// Splits the encrypted text into a number of alphabets equal to the calculated period and returns an array of the alphabets
 std::string* VigenereSolver::splitAlphabets(){
     std::string cleanedText = removeSpaces(encryptedText);
     std::string* alphabets = new std::string[PERIOD];
@@ -140,6 +150,7 @@ std::string* VigenereSolver::splitAlphabets(){
     return alphabets;
 }
 
+// Takes a string and returns the string with all spaces removed
 std::string VigenereSolver::removeSpaces(std::string textWithSpaces){
     std::string textWithoutSpaces = "";
 
@@ -152,8 +163,9 @@ std::string VigenereSolver::removeSpaces(std::string textWithSpaces){
     return textWithoutSpaces;
 }
 
-// Reconstructs the translated letters according to the period. The higher the top number, the more results will be printed.
-// The number of results printed will be equal to <TOP_NUM> ^ <PERIOD>.
+// Takes an 2D array of alphabets and their specified top most likely solutions along with the size of the encrypted text's letters
+// Then weaves them together in all permutations to all possible decryptions with the listed parameters
+// TOP_NUM and PERIOD determine the number of results printed. (Number of results = TOP_NUM ^ PERIOD)
 void VigenereSolver::weaveAlphabets(std::string** possibleDecodeAlphabets, int encryptedTextLengthWithoutSpaces){
     int numberOfCharactersPrinted = 0;
 
