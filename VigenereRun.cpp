@@ -13,12 +13,12 @@ int main(){
     }
 
     VigenereSolver vigenereSolver(encryptedText);
-    //If the results seem a little off, try writing the above line as:
+    // If the results seem a little off, try writing the above line as:
     // VigenereSolver vigenereSolver(encryptedText, 2);
-    // Increasing the parameter at the end will force the solver to print
-    // out more possible solutions. It's likely the correct translation
-    // is nearby in the long list. However, remember, the number of results
-    // printed will be equal to <parameter> ^ <the period of the key>.
+    // Increasing the second parameter at the end will force the solver to
+    // print out more possible solutions. It's likely the correct translation
+    // is nearby in the long list. However, remember, the number of printed
+    // results will be equal to <second parameter> ^ <the period of the key>.
 
     vigenereSolver.printResults();
 }

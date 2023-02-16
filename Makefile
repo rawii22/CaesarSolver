@@ -23,4 +23,4 @@ vigenere: CaesarSolver.cpp VigenereSolver.cpp VigenereRun.cpp
 	$(CC) $(CFLAGS) -o vigenere CaesarSolver.cpp VigenereSolver.cpp VigenereRun.cpp
 
 clean:
-	$(RM) caesar$(EXT) vigenere$(EXT)
+	$(RM) caesar$(EXT) vigenere$(EXT) a$(EXT)

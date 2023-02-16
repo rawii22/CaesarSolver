@@ -92,6 +92,7 @@ int VigenereSolver::compareICToPeriodTable(double ICValue){
     return mostLikelyPeriod;
 }
 
+// This function finishes attempting to decode the ciphertext using the calculated period.
 void VigenereSolver::printResults()
 {
     std::string** possibleDecodedAlphabets = new std::string*[PERIOD];
