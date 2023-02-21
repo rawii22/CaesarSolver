@@ -8,7 +8,7 @@ int main(){
     std::string encryptedText = "";
     while (encryptedText.empty())
     {
-        std::cout << "Please enter a ciphertext:\n";
+        std::cout << "\nPlease enter a ciphertext:\n";
         getline(std::cin, encryptedText);
     }
 

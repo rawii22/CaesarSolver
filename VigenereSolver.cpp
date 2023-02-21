@@ -93,11 +93,9 @@ int VigenereSolver::compareICToPeriodTable(double ICValue){
 }
 
 // This function finishes attempting to decode the ciphertext using the calculated period.
-void VigenereSolver::printResults()
-{
+void VigenereSolver::printResults(){
     std::string** possibleDecodedAlphabets = new std::string*[PERIOD];
-    for (int i = 0; i < PERIOD; i++)
-    {
+    for (int i = 0; i < PERIOD; i++){
         possibleDecodedAlphabets[i] = new std::string[TOP_NUM];
     }
 
@@ -118,18 +116,19 @@ void VigenereSolver::printResults()
 
     std::cout << "\n\n";
 
-    for (int i = 0; i < PERIOD; i++){
-        std::cout << possibleDecodedAlphabets[i][0];
-        std::cout << "\n";
-    }
+    // for (int i = 0; i < PERIOD; i++){
+    //     std::cout << possibleDecodedAlphabets[i][0];
+    //     std::cout << "\n";
+    // }
 
-    std::cout << "\n";
+    // std::cout << "\n";
 
     std::cout << "Most likely plain text:\n";
     weaveAlphabets(possibleDecodedAlphabets, removeSpaces(encryptedText).length());
     
-    for (int i = 0; i < PERIOD; i++)
+    for (int i = 0; i < PERIOD; i++){
         delete[] possibleDecodedAlphabets[i];
+    }
     delete[] possibleDecodedAlphabets;
 }
 
