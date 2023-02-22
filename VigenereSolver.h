@@ -5,8 +5,6 @@
 #include <string>
 
 const double VALUE_SUGGESTING_PERIOD_OF_ONE = 0.0590655;
-// TODO: move LANGUAGE_LETTER_COUNT to ceaserSolver and remove magic numbers representing the number of letters
-const int LANGUAGE_LETTER_COUNT = 26;
 
 class VigenereSolver
 {
