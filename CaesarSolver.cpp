@@ -1,4 +1,4 @@
-// Ricardo Romanach
+// Winter Thomas and Ricardo Romanach
 // Caeser Cipher Statistical Attack
 
 #include <iostream>

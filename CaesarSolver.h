@@ -1,4 +1,4 @@
-// Ricardo Romanach
+// Winter Thomas and Ricardo Romanach
 
 #ifndef CAESARSOLVER_H
 #define CAESARSOLVER_H

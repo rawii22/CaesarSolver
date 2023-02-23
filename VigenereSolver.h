@@ -1,3 +1,5 @@
+// Winter Thomas and Ricardo Romanach
+
 #ifndef VIGENERESOLVER_H
 #define VIGENERESOLVER_H
 

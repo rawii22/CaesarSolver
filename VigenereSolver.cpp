@@ -1,3 +1,5 @@
+// Winter Thomas and Ricardo Romanach
+
 #include "CaesarSolver.h"
 #include "VigenereSolver.h"
 #include <string>

@@ -1,4 +1,4 @@
-// Ricardo Romanach
+// Winter Thomas and Ricardo Romanach
 
 #include <iostream>
 #include <string>
