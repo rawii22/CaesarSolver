@@ -7,8 +7,8 @@
 
 // Returns an array with the frequency of each character in a given string
 int* CaesarSolver::getFrequencyOfLetters(std::string text){
-    int* letterFrequency = new int[27]; // Slot 27 is reserved for spaces
-    for (int i = 0; i < 27; i++){
+    int* letterFrequency = new int[LANGUAGE_LETTER_COUNT + 1]; // Slot 27 is reserved for spaces
+    for (int i = 0; i < LANGUAGE_LETTER_COUNT + 1; i++){
         letterFrequency[i] = 0;
     }
     for (char i : text){
@@ -20,7 +20,7 @@ int* CaesarSolver::getFrequencyOfLetters(std::string text){
 // Transforms a letter into its number in the alphabet 0 - 25 (Spaces as 26)
 int CaesarSolver::convertLetterToNumber(char letter){
     if (letter == ' '){
-        return 26;
+        return LANGUAGE_LETTER_COUNT;
     }
     return int(letter) - 65;
 }
@@ -36,15 +36,15 @@ char CaesarSolver::convertNumberToLetter(int number){
 double* CaesarSolver::getCorrelationOfFrequencies(std::string text){
     int* letterFrequencies = getFrequencyOfLetters(text);
     // Gets number of letters in text without spaces
-    int numberOfLetters = text.length() - letterFrequencies[26];
+    int numberOfLetters = text.length() - letterFrequencies[LANGUAGE_LETTER_COUNT];
     double total;
-    double* correlationFrequencies = new double [26];
+    double* correlationFrequencies = new double [LANGUAGE_LETTER_COUNT];
 
-    for (int i = 0; i < 26; i++){
+    for (int i = 0; i < LANGUAGE_LETTER_COUNT; i++){
         total = 0;
-        for (int j = 0; j < 26; j++){
+        for (int j = 0; j < LANGUAGE_LETTER_COUNT; j++){
             // Calculates the correlation of a letter in the cipher text with its frequency of use in the English language
-            total += ((double) letterFrequencies[j] / numberOfLetters) * ENGLISH_ALPHABET_FREQUENCIES[((26 + j - i) % 26)];
+            total += ((double) letterFrequencies[j] / numberOfLetters) * ENGLISH_ALPHABET_FREQUENCIES[((LANGUAGE_LETTER_COUNT + j - i) % LANGUAGE_LETTER_COUNT)];
         }
         correlationFrequencies[i] = total;
     }
@@ -70,7 +70,7 @@ int* CaesarSolver::getTopShifts(double* frequencies, int topAmount){
         max = 0.0;
 
         // Check if the value is the largest value in the array
-        for (int j = 0; j < 26; j++){
+        for (int j = 0; j < LANGUAGE_LETTER_COUNT; j++){
             // If its the largest value
             if(frequencies[j] > max){
                 // Check if its already in the top list
@@ -123,7 +123,7 @@ std::string CaesarSolver::unshift(std::string ciphertext, int shift)
         storeForShift -= shift;
         // Account for shift overflowing
         if (storeForShift < 0){
-            storeForShift += 26;
+            storeForShift += LANGUAGE_LETTER_COUNT;
         }
         result += convertNumberToLetter(storeForShift);
     }

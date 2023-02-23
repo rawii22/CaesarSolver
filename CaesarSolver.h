@@ -5,7 +5,8 @@
 
 #include <string>
 
-const double ENGLISH_ALPHABET_FREQUENCIES [26] = {0.080, 0.015, 0.030, 0.040, 0.130, 0.020, 0.015, 0.060, 0.065, 0.005, 0.005, 0.035, 0.030, 0.070, 0.080, 0.020, 0.002, 0.065, 0.060, 0.090, 0.030, 0.010, 0.015, 0.005, 0.020, 0.002};
+const int LANGUAGE_LETTER_COUNT = 26;
+const double ENGLISH_ALPHABET_FREQUENCIES [LANGUAGE_LETTER_COUNT] = {0.080, 0.015, 0.030, 0.040, 0.130, 0.020, 0.015, 0.060, 0.065, 0.005, 0.005, 0.035, 0.030, 0.070, 0.080, 0.020, 0.002, 0.065, 0.060, 0.090, 0.030, 0.010, 0.015, 0.005, 0.020, 0.002};
 
 //This class accepts a ciphertext and uses a statistical attack to figure out the plaintext.
 class CaesarSolver
