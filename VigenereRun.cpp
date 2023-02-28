@@ -3,14 +3,12 @@
 #include <iostream>
 #include <string>
 #include "VigenereSolver.h"
+#include "DataManipulation.h"
 
 int main(){
     std::string encryptedText;
-    while (encryptedText.empty())
-    {
-        std::cout << "\nPlease enter a ciphertext:\n";
-        getline(std::cin, encryptedText);
-    }
+
+    encryptedText = DataManipulation::getUserInput("Please enter the file name:", "Please enter a ciphertext:");
 
     VigenereSolver::printSolveVigenere(encryptedText);
 }
