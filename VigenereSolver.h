@@ -21,11 +21,12 @@ class VigenereSolver
         static std::string cleanText(std::string rawEncryptedText);
         static int getHighestValueIndex(double* listOfValues, int sizeOfList);
         static double** calculateKeys(std::string cleanEncryptedText, int period);
-        static int* CalculateMostLikelyKey(double** decodedAlphabetFrequencies, int period);
+        static int* calculateMostLikelyKey(double** decodedAlphabetFrequencies, int period);
         static std::string convertKeyToString(int* key, int period);
         static std::string decodeVigenere(std::string encryptedText, int* key, int period);
-        static std::string solveVigenere(std::string encryptedText, bool hasExtraInfo);
-        static void printSolveVigenere(std::string encryptedText);
+        static std::string solveMostLikelyVigenere(std::string encryptedText, bool hasExtraInfo = false);
+        static void printMostLikelyVigenere(std::string encryptedText);
+        static void solveVigenere(std::string encryptedText, bool hasExtraInfo = false);
 };
 
 #endif

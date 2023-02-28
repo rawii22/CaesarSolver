@@ -7,7 +7,7 @@
 
 // Does all steps for decrypting a vigenere cypher automatically
 // hasExtraInfo also returns the period and the key in the returned string
-std::string VigenereSolver::solveVigenere(std::string encryptedText, bool hasExtraInfo = false){
+std::string VigenereSolver::solveMostLikelyVigenere(std::string encryptedText, bool hasExtraInfo){
     // Simplify text for calculating period and keys
     std::string cleanEncryptedText = cleanText(encryptedText);
     // Set a max period to check for
@@ -19,7 +19,7 @@ std::string VigenereSolver::solveVigenere(std::string encryptedText, bool hasExt
     // Calculate the correlation frequencies for the alphabets
     double** decodedAlphabetFrequencies = calculateKeys(cleanEncryptedText, period);
     // Get most likely key
-    int* key = CalculateMostLikelyKey(decodedAlphabetFrequencies, period);
+    int* key = calculateMostLikelyKey(decodedAlphabetFrequencies, period);
     // Decrypt text
     std::string decryptedText = "";
 
@@ -43,8 +43,69 @@ std::string VigenereSolver::solveVigenere(std::string encryptedText, bool hasExt
 }
 
 // Prints the result of solveVigenere with extra info
-void VigenereSolver::printSolveVigenere(std::string encryptedText){
-    std::cout << solveVigenere(encryptedText, true);
+void VigenereSolver::printMostLikelyVigenere(std::string encryptedText){
+    std::cout << solveMostLikelyVigenere(encryptedText, true);
+}
+
+void VigenereSolver::solveVigenere(std::string encryptedText, bool hasExtraInfo){
+    // Simplify text for calculating period and keys
+    std::string cleanEncryptedText = cleanText(encryptedText);
+    // Set a max period to check for
+    int maxPeriodChecked = sqrt(cleanEncryptedText.length()) + 1;
+    // Calculate the most likely periods
+    double* periodList = calculateIdealPeriod(cleanEncryptedText, maxPeriodChecked);
+    // Get most likely period
+    int period = getHighestValueIndex(periodList, maxPeriodChecked) + 1;
+    // Calculate the correlation frequencies for the alphabets
+    double** decodedAlphabetFrequencies = calculateKeys(cleanEncryptedText, period);
+    // Get most likely key
+    int* key = calculateMostLikelyKey(decodedAlphabetFrequencies, period);
+    // Decrypt text
+    std::string decryptedText;
+
+    decryptedText = decodeVigenere(encryptedText, key, period);
+    std::string userInput;
+    int integerInput;
+
+    while (userInput != "6"){
+        std::cout << "\nPeriod:\t" << period;
+        std::cout << "\nKey:\t" << convertKeyToString(key, period);
+        std::cout << "\nText:\t" << decryptedText;
+
+        std::cout << "\n\n1. Change to next most likely period";
+        std::cout << "\n2. Set period";
+        std::cout << "\n3. Change to next most likely alphabet";
+        std::cout << "\n4. Set an alphabet";
+        std::cout << "\n5. Output to a file";
+        std::cout << "\n6. Quit\n";
+
+        getline(std::cin, userInput);
+        if (userInput.empty()){
+            std::cout << "Please enter a valid option.\n";
+            continue;
+        }
+
+        // Convert the first character to an integer
+        integerInput = userInput[0];
+
+        // Check to make sure its a valid input
+        if (!(49 <= integerInput && integerInput <= 54)){
+            std::cout << "Please enter a valid input\n";
+            continue;
+        }
+
+        // TODO: Put user choices here
+        switch (integerInput){
+        }
+    }
+
+    // Delete arrays
+    delete[] periodList;
+    delete[] key;
+    for (int i = 0; i < period; i++){
+        delete[] decodedAlphabetFrequencies[i];
+    }
+    delete[] decodedAlphabetFrequencies;
 }
 
 
@@ -111,7 +172,7 @@ double** VigenereSolver::calculateKeys(std::string cleanEncryptedText, int perio
 }
 
 // Returns the most likely key from the information gathered from the alphabet frequencies
-int* VigenereSolver::CalculateMostLikelyKey(double** decodedAlphabetFrequencies, int period){
+int* VigenereSolver::calculateMostLikelyKey(double** decodedAlphabetFrequencies, int period){
     int* key = new int[period];
 
     for (int i = 0; i < period; i++){
