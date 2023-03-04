@@ -10,5 +10,5 @@ int main(){
 
     encryptedText = DataManipulation::getUserInput("Please enter the file name:", "Please enter a ciphertext:");
 
-    VigenereSolver::printMostLikelyVigenere(encryptedText);
+    VigenereSolver::solveVigenere(encryptedText);
 }

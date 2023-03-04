@@ -2,6 +2,7 @@
 
 #include "CaesarSolver.h"
 #include "VigenereSolver.h"
+#include "DataManipulation.h"
 #include <string>
 #include <cmath>
 
@@ -47,6 +48,7 @@ void VigenereSolver::printMostLikelyVigenere(std::string encryptedText){
     std::cout << solveMostLikelyVigenere(encryptedText, true);
 }
 
+// Solves the vigenere cipher and allows for the user to edit the solution
 void VigenereSolver::solveVigenere(std::string encryptedText, bool hasExtraInfo){
     // Simplify text for calculating period and keys
     std::string cleanEncryptedText = cleanText(encryptedText);
@@ -64,10 +66,9 @@ void VigenereSolver::solveVigenere(std::string encryptedText, bool hasExtraInfo)
     std::string decryptedText;
 
     decryptedText = decodeVigenere(encryptedText, key, period);
-    std::string userInput;
-    int integerInput;
+    int integerInput = 0;
 
-    while (userInput != "6"){
+    while (integerInput != 7){
         std::cout << "\nPeriod:\t" << period;
         std::cout << "\nKey:\t" << convertKeyToString(key, period);
         std::cout << "\nText:\t" << decryptedText;
@@ -76,26 +77,103 @@ void VigenereSolver::solveVigenere(std::string encryptedText, bool hasExtraInfo)
         std::cout << "\n2. Set period";
         std::cout << "\n3. Change to next most likely alphabet";
         std::cout << "\n4. Set an alphabet";
-        std::cout << "\n5. Output to a file";
-        std::cout << "\n6. Quit\n";
+        std::cout << "\n5. Set the key";
+        std::cout << "\n6. Output to a file";
+        std::cout << "\n7. Quit\n";
 
-        getline(std::cin, userInput);
-        if (userInput.empty()){
-            std::cout << "Please enter a valid option.\n";
-            continue;
-        }
+        integerInput = DataManipulation::getIntegerInput(1, 7);
+        // Both of these variables are used rarely in the switch case
+        int tempInput;
+        std::string tempString;
 
-        // Convert the first character to an integer
-        integerInput = userInput[0];
-
-        // Check to make sure its a valid input
-        if (!(49 <= integerInput && integerInput <= 54)){
-            std::cout << "Please enter a valid input\n";
-            continue;
-        }
-
-        // TODO: Put user choices here
         switch (integerInput){
+            case 1:
+                // Remove the current period from the list of most likely periods
+                if (period <= maxPeriodChecked){
+                    periodList[period - 1] = -1;
+                }
+
+                // Get the new period
+                period = getHighestValueIndex(periodList, maxPeriodChecked) + 1;
+
+                // Recalculate all values that change from a new period
+                decodedAlphabetFrequencies = calculateKeys(cleanEncryptedText, period);
+                key = calculateMostLikelyKey(decodedAlphabetFrequencies, period);
+                decryptedText = decodeVigenere(encryptedText, key, period);
+                break;
+
+            case 2:
+                // Remove the current period from the list of most likely periods
+                if (period <= maxPeriodChecked){
+                    periodList[period - 1] = -1;
+                }
+
+                // Get the new period
+                std::cout << "\nPlease enter a period";
+                std::cout << "\nMax value is " << cleanEncryptedText.length() / 2 << "\n";
+                period = DataManipulation::getIntegerInput(1, cleanEncryptedText.length() / 2);
+
+                // Recalculate all values that change from a new period
+                decodedAlphabetFrequencies = calculateKeys(cleanEncryptedText, period);
+                key = calculateMostLikelyKey(decodedAlphabetFrequencies, period);
+                decryptedText = decodeVigenere(encryptedText, key, period);
+                break;
+
+            case 3:
+                // TODO: Print something to help user select which alphabet to change
+
+                // Get which alphabet to change
+                std::cout << "\nInput which alphabet to change:\n";
+                tempInput = DataManipulation::getIntegerInput(0, period);
+
+                // Remove the old alphabet's key from the list of most likely keys
+                decodedAlphabetFrequencies[tempInput][key[tempInput]] = -1;
+
+                // Get the new most likely key
+                key[tempInput] = getHighestValueIndex(decodedAlphabetFrequencies[tempInput], LANGUAGE_LETTER_COUNT);
+
+                // Decrypt the text with they new key
+                decryptedText = decodeVigenere(encryptedText, key, period);
+                break;
+
+            case 4:
+                // TODO: Print something to help user select which alphabet to change
+
+                // Get which alphabet to change
+                std::cout << "\nInput which alphabet to change:\n";
+                tempInput = DataManipulation::getIntegerInput(0, period);
+
+                // Remove the old alphabet's key from the list of most likely keys
+                decodedAlphabetFrequencies[tempInput][key[tempInput]] = -1;
+
+                // Get the new key
+                std::cout << "\nChange the key for the alphabet to:\n";
+                key[tempInput] = CaesarSolver::convertLetterToNumber(DataManipulation::getLetterInput());
+
+                // Decrypt the text with they new key
+                decryptedText = decodeVigenere(encryptedText, key, period);
+                break;
+
+            case 5:
+                // Get the new key
+                tempString = getKeyUserInput(cleanEncryptedText.length() / 2);
+                key = convertStringToKey(tempString);
+
+                // Recalculate everything to account for the new key
+                for (int i = 0; i < period; i++){
+                    delete[] decodedAlphabetFrequencies[i];
+                }
+                delete[] decodedAlphabetFrequencies;
+                period = tempString.length();
+                decodedAlphabetFrequencies = calculateKeys(cleanEncryptedText, period);
+                decryptedText = decodeVigenere(encryptedText, key, period);
+                break;
+
+            case 6:
+                std::cout << "\nWhat file would you like to output to?\n> ";
+                getline(std::cin, tempString);
+                DataManipulation::writeStringToFile(tempString, "Period: " + std::to_string(period) + "\nKey: " + convertKeyToString(key, period) + "\nDecrypted Text:\n" + decryptedText);
+                break;
         }
     }
 
@@ -280,4 +358,64 @@ int VigenereSolver::getHighestValueIndex(double* listOfValues, int sizeOfList){
     }
 
     return highestValueIndex;    
+}
+
+// Asks the user for a key, validates it, and converts it to a string of all capital letters
+std::string VigenereSolver::getKeyUserInput(int maxKeyLength){
+    std::string userInput;
+    bool hasBadInput;
+
+    while (true){
+        std::cout << "\nPlease enter a key:\n> ";
+        getline(std::cin, userInput);
+
+        // Make sure the key is an appropriate length
+        if ((int) userInput.length() > maxKeyLength){
+            std::cout << "\nMax key length is " << maxKeyLength << "\n";
+            continue;
+        }
+
+        // Make sure the user input something
+        if (userInput.empty()){
+            std::cout << "\n";
+            continue;
+        }
+
+        hasBadInput = false;
+
+        // Convert key to a string while validating it is only letters
+        for (int i = 0; i < (int) userInput.length(); i++){
+            // If lowercase letter
+            if (userInput[i] >= 97 && userInput[i] <= 122){
+                userInput[i] = toupper(userInput[i]);
+                continue;
+            }
+            // If uppercase letter
+            if (userInput[i] >= 65 && userInput[i] <= 90){
+                continue;
+            }
+
+            // If not a letter
+            hasBadInput = true;
+            std::cout << "\nThe key can only have letters in it.\n";
+            break;
+        }
+
+        // If the key is complete
+        if (!hasBadInput){
+            return userInput;
+        }
+        // Otherwise ask for a new key
+    }
+}
+
+// converts a key from a string to an integer array
+int* VigenereSolver::convertStringToKey(std::string stringKey){
+    int keyLength = stringKey.length();
+    int* key = new int[keyLength];
+
+    for (int i = 0; i < keyLength; i++){
+        key[i] = CaesarSolver::convertLetterToNumber(stringKey[i]);
+    }
+    return key;
 }

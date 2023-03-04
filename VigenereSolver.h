@@ -27,6 +27,8 @@ class VigenereSolver
         static std::string solveMostLikelyVigenere(std::string encryptedText, bool hasExtraInfo = false);
         static void printMostLikelyVigenere(std::string encryptedText);
         static void solveVigenere(std::string encryptedText, bool hasExtraInfo = false);
+        static std::string getKeyUserInput(int maxKeyLength);
+        static int* convertStringToKey(std::string stringKey);
 };
 
 #endif
