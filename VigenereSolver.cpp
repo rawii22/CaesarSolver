@@ -278,12 +278,12 @@ std::string VigenereSolver::decodeVigenere(std::string encryptedText, int* key, 
 
     for (char character : encryptedText){
         // If the character isn't a letter, just save the character and continue
-        if (character < 65 || (character > 90 && character < 97) || character > 122){
+        if (!isalpha(character)){
             decryptedText += character;
             continue;
         }
         // Check if lowercase letter 
-        if (character >= 97 && character <= 122){
+        if (islower(character)){
             character -= key[currentAlphabet];
             // Check for underflow
             if (character < 97){
@@ -333,10 +333,10 @@ std::string VigenereSolver::cleanText(std::string rawEncryptedText){
 
     for (char i : rawEncryptedText){
         if (i != ' '){
-            if (i >= 97 && i <= 122){ // Capitalize the lower letters
+            if (islower(i)){ // Capitalize the lower letters
                 cleanText += toupper(i);
             }
-            else if (i >= 65 && i <= 90){ // Include capital letters
+            else if (isupper(i)){ // Include capital letters
                 cleanText += i;
             }
         }
@@ -386,12 +386,12 @@ std::string VigenereSolver::getKeyUserInput(int maxKeyLength){
         // Convert key to a string while validating it is only letters
         for (int i = 0; i < (int) userInput.length(); i++){
             // If lowercase letter
-            if (userInput[i] >= 97 && userInput[i] <= 122){
+            if (islower(userInput[i])){
                 userInput[i] = toupper(userInput[i]);
                 continue;
             }
             // If uppercase letter
-            if (userInput[i] >= 65 && userInput[i] <= 90){
+            if (isupper(userInput[i])){
                 continue;
             }
 

@@ -143,11 +143,11 @@ char DataManipulation::getLetterInput(){
         charInput = userInput[0];
 
         // Check if the character is a lowercase letter
-        if (97 <= charInput && charInput <= 122){
+        if (islower(charInput)){
             return toupper(charInput);
         }
         // Check if the character is a capital letter
-        else if (65 <= charInput && charInput <= 90){
+        else if (isupper(charInput)){
             return charInput;
         }
         // If not a letter
