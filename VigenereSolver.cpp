@@ -6,50 +6,12 @@
 #include <string>
 #include <cmath>
 
-// Does all steps for decrypting a vigenere cypher automatically
-// hasExtraInfo also returns the period and the key in the returned string
-std::string VigenereSolver::solveMostLikelyVigenere(std::string encryptedText, bool hasExtraInfo){
-    // Simplify text for calculating period and keys
-    std::string cleanEncryptedText = cleanText(encryptedText);
-    // Set a max period to check for
-    int maxPeriodChecked = sqrt(cleanEncryptedText.length()) + 1;
-    // Calculate the most likely periods
-    double* periodList = calculateIdealPeriod(cleanEncryptedText, maxPeriodChecked);
-    // Get most likely period
-    int period = getHighestValueIndex(periodList, maxPeriodChecked) + 1;
-    // Calculate the correlation frequencies for the alphabets
-    double** decodedAlphabetFrequencies = calculateKeys(cleanEncryptedText, period);
-    // Get most likely key
-    int* key = calculateMostLikelyKey(decodedAlphabetFrequencies, period);
-    // Decrypt text
-    std::string decryptedText = "";
-
-    if (hasExtraInfo){
-        decryptedText += "\nYour period is calculated to be " + std::to_string(period) + "\n\n";
-        decryptedText += "Your key is " + convertKeyToString(key, period) + "\n\n";
-        decryptedText += "Decrypted Text:\n";
-    }
-
-    decryptedText += decodeVigenere(encryptedText, key, period);
-
-    // Delete arrays
-    delete[] periodList;
-    delete[] key;
-    for (int i = 0; i < period; i++){
-        delete[] decodedAlphabetFrequencies[i];
-    }
-    delete[] decodedAlphabetFrequencies;
-
-    return decryptedText;
-}
-
-// Prints the result of solveVigenere with extra info
-void VigenereSolver::printMostLikelyVigenere(std::string encryptedText){
-    std::cout << solveMostLikelyVigenere(encryptedText, true);
-}
+/////////////////////////
+// Main User Functions //
+/////////////////////////
 
 // Solves the vigenere cipher and allows for the user to edit the solution
-void VigenereSolver::solveVigenere(std::string encryptedText, bool hasExtraInfo){
+void VigenereSolver::solveVigenere(std::string encryptedText){
     // Simplify text for calculating period and keys
     std::string cleanEncryptedText = cleanText(encryptedText);
     // Set a max period to check for
@@ -186,29 +148,51 @@ void VigenereSolver::solveVigenere(std::string encryptedText, bool hasExtraInfo)
     delete[] decodedAlphabetFrequencies;
 }
 
+// Does all steps for decrypting a vigenere cypher automatically
+// hasExtraInfo also returns the period and the key in the returned string
+std::string VigenereSolver::solveMostLikelyVigenere(std::string encryptedText, bool hasExtraInfo){
+    // Simplify text for calculating period and keys
+    std::string cleanEncryptedText = cleanText(encryptedText);
+    // Set a max period to check for
+    int maxPeriodChecked = sqrt(cleanEncryptedText.length()) + 1;
+    // Calculate the most likely periods
+    double* periodList = calculateIdealPeriod(cleanEncryptedText, maxPeriodChecked);
+    // Get most likely period
+    int period = getHighestValueIndex(periodList, maxPeriodChecked) + 1;
+    // Calculate the correlation frequencies for the alphabets
+    double** decodedAlphabetFrequencies = calculateKeys(cleanEncryptedText, period);
+    // Get most likely key
+    int* key = calculateMostLikelyKey(decodedAlphabetFrequencies, period);
+    // Decrypt text
+    std::string decryptedText = "";
 
-// Index of Coincidence (IC) Calculator
-// This is used to calculate if the period of a key is valid. If this returns a value greater than 0.06,
-// then it is more likely that the period of the alphabet is one. If this is true for the majority of
-// the alphabets in a Vigenere cipher, then you have most likely selected a valid period length.
-double VigenereSolver::ICCalculator(std::string text){
-    int* freq = CaesarSolver::getFrequencyOfLetters(text);
-    int totalLetters = 0;
-
-    for (int i = 0; i < LANGUAGE_LETTER_COUNT; i++){
-        totalLetters += freq[i];
+    if (hasExtraInfo){
+        decryptedText += "\nYour period is calculated to be " + std::to_string(period) + "\n\n";
+        decryptedText += "Your key is " + convertKeyToString(key, period) + "\n\n";
+        decryptedText += "Decrypted Text:\n";
     }
 
-    double total = 0;
+    decryptedText += decodeVigenere(encryptedText, key, period);
 
-    for (int i = 0; i < LANGUAGE_LETTER_COUNT; i++){
-        total += freq[i] * (freq[i] - 1);
+    // Delete arrays
+    delete[] periodList;
+    delete[] key;
+    for (int i = 0; i < period; i++){
+        delete[] decodedAlphabetFrequencies[i];
     }
+    delete[] decodedAlphabetFrequencies;
 
-    total *= 1 / (double) (totalLetters * (totalLetters - 1));
-
-    return total;
+    return decryptedText;
 }
+
+// Prints the result of solveVigenere with extra info
+void VigenereSolver::printMostLikelyVigenere(std::string encryptedText){
+    std::cout << solveMostLikelyVigenere(encryptedText, true);
+}
+
+///////////////////////////////
+// Core Decryption Functions //
+///////////////////////////////
 
 // Determines the most likely period using Index of Correlation (IC) Values
 double* VigenereSolver::calculateIdealPeriod(std::string cleanEncryptedText, int maxPeriodChecked){
@@ -260,17 +244,6 @@ int* VigenereSolver::calculateMostLikelyKey(double** decodedAlphabetFrequencies,
     return key;
 }
 
-// Takes the key as an integer array and returns it as a string of letters
-std::string VigenereSolver::convertKeyToString(int* key, int period){
-    std::string stringKey = "";
-
-    for (int i = 0; i < period; i++){
-        stringKey += CaesarSolver::convertNumberToLetter(key[i]);
-    }
-
-    return stringKey;
-}
-
 // decrypts the provided string based off the period and key supplied to it
 std::string VigenereSolver::decodeVigenere(std::string encryptedText, int* key, int period){
     std::string decryptedText = "";
@@ -308,6 +281,33 @@ std::string VigenereSolver::decodeVigenere(std::string encryptedText, int* key, 
     }
 
     return decryptedText;
+}
+
+//////////////////////
+// Helper Functions //
+//////////////////////
+
+// Index of Coincidence (IC) Calculator
+// This is used to calculate if the period of a key is valid. If this returns a value greater than 0.06,
+// then it is more likely that the period of the alphabet is one. If this is true for the majority of
+// the alphabets in a Vigenere cipher, then you have most likely selected a valid period length.
+double VigenereSolver::ICCalculator(std::string text){
+    int* freq = CaesarSolver::getFrequencyOfLetters(text);
+    int totalLetters = 0;
+
+    for (int i = 0; i < LANGUAGE_LETTER_COUNT; i++){
+        totalLetters += freq[i];
+    }
+
+    double total = 0;
+
+    for (int i = 0; i < LANGUAGE_LETTER_COUNT; i++){
+        total += freq[i] * (freq[i] - 1);
+    }
+
+    total *= 1 / (double) (totalLetters * (totalLetters - 1));
+
+    return total;
 }
 
 // Splits the encrypted text into a number of alphabets equal to the calculated period and returns an array of the alphabets
@@ -407,6 +407,17 @@ std::string VigenereSolver::getKeyUserInput(int maxKeyLength){
         }
         // Otherwise ask for a new key
     }
+}
+
+// Takes the key as an integer array and returns it as a string of letters
+std::string VigenereSolver::convertKeyToString(int* key, int period){
+    std::string stringKey = "";
+
+    for (int i = 0; i < period; i++){
+        stringKey += CaesarSolver::convertNumberToLetter(key[i]);
+    }
+
+    return stringKey;
 }
 
 // converts a key from a string to an integer array
