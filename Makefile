@@ -24,8 +24,8 @@ caesar: Caesar.o CaesarRun.o DataManipulation.o
 vigenere: Caesar.o Vigenere.o DataManipulation.o VigenereRun.o
 	$(CC) $(CFLAGS) -o vigenere Caesar.o Vigenere.o DataManipulation.o VigenereRun.o
 
-CaesarSolver.o: CaesarSolver.cpp
-	$(CC) -c CaesarSolver.cpp
+Caesar.o: Caesar.cpp
+	$(CC) -c Caesar.cpp
 
 CaesarRun.o: CaesarRun.cpp
 	$(CC) -c CaesarRun.cpp
