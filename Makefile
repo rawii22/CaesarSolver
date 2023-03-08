@@ -9,18 +9,35 @@ ifdef OS
 else
    ifeq ($(shell uname), Linux)
       RM = rm -f
-	  EXT =
+      EXT =
       FixPath = $1
    endif
 endif
 
+.PHONY: all clean
+
 all: caesar vigenere
 
-caesar: CaesarSolver.cpp CaesarRun.cpp
-	$(CC) $(CFLAGS) -o caesar CaesarSolver.cpp CaesarRun.cpp
+caesar: CaesarSolver.o CaesarRun.o
+	$(CC) $(CFLAGS) -o caesar CaesarSolver.o CaesarRun.o
 
-vigenere: CaesarSolver.cpp Vigenere.cpp DataManipulation.cpp VigenereRun.cpp
-	$(CC) $(CFLAGS) -o vigenere CaesarSolver.cpp Vigenere.cpp DataManipulation.cpp VigenereRun.cpp
+vigenere: CaesarSolver.o Vigenere.o DataManipulation.o VigenereRun.o
+	$(CC) $(CFLAGS) -o vigenere CaesarSolver.o Vigenere.o DataManipulation.o VigenereRun.o
+
+CaesarSolver.o: CaesarSolver.cpp
+	$(CC) -c CaesarSolver.cpp
+
+CaesarRun.o: CaesarRun.cpp
+	$(CC) -c CaesarRun.cpp
+
+Vigenere.o: Vigenere.cpp
+	$(CC) -c Vigenere.cpp
+
+VigenereRun.o: VigenereRun.cpp
+	$(CC) -c VigenereRun.cpp
+
+DataManipulation.o: DataManipulation.cpp
+	$(CC) -c DataManipulation.cpp
 
 clean:
-	$(RM) caesar$(EXT) vigenere$(EXT) a$(EXT)
+	$(RM) caesar$(EXT) vigenere$(EXT) *.o
