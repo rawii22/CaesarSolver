@@ -1,6 +1,6 @@
 // Winter Thomas and Ricardo Romanach
 
-#include "CaesarSolver.h"
+#include "Caesar.h"
 #include "Vigenere.h"
 #include "DataManipulation.h"
 #include <iomanip>
@@ -115,7 +115,7 @@ void Vigenere::solveVigenere(std::string encryptedText){
 
                 // Get the new key
                 std::cout << "\nChange the key for the alphabet to:\n";
-                key[tempInput] = CaesarSolver::convertLetterToNumber(DataManipulation::getLetterInput());
+                key[tempInput] = Caesar::convertLetterToNumber(DataManipulation::getLetterInput());
 
                 // Decrypt the text with they new key
                 decryptedText = decodeVigenere(encryptedText, key, period);
@@ -284,7 +284,7 @@ double** Vigenere::calculateKeys(std::string cleanEncryptedText, int period){
     std::string* alphabets = splitAlphabets(cleanEncryptedText, period);
 
     for (int i = 0; i < period; i++){
-        decodedAlphabetFrequencies[i] = CaesarSolver::getCorrelationOfFrequencies(alphabets[i]);
+        decodedAlphabetFrequencies[i] = Caesar::getCorrelationOfFrequencies(alphabets[i]);
     }
 
     delete[] alphabets;
@@ -350,7 +350,7 @@ std::string Vigenere::decodeVigenere(std::string encryptedText, int* key, int pe
 // then it is more likely that the period of the alphabet is one. If this is true for the majority of
 // the alphabets in a Vigenere cipher, then you have most likely selected a valid period length.
 double Vigenere::ICCalculator(std::string text){
-    int* freq = CaesarSolver::getFrequencyOfLetters(text);
+    int* freq = Caesar::getFrequencyOfLetters(text);
     int totalLetters = 0;
 
     for (int i = 0; i < LANGUAGE_LETTER_COUNT; i++){
@@ -579,7 +579,7 @@ std::string Vigenere::convertKeyToString(int* key, int period){
     std::string stringKey = "";
 
     for (int i = 0; i < period; i++){
-        stringKey += CaesarSolver::convertNumberToLetter(key[i]);
+        stringKey += Caesar::convertNumberToLetter(key[i]);
     }
 
     return stringKey;
@@ -591,7 +591,7 @@ int* Vigenere::convertStringToKey(std::string stringKey){
     int* key = new int[keyLength];
 
     for (int i = 0; i < keyLength; i++){
-        key[i] = CaesarSolver::convertLetterToNumber(stringKey[i]);
+        key[i] = Caesar::convertLetterToNumber(stringKey[i]);
     }
 
     return key;

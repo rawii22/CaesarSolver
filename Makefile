@@ -18,11 +18,11 @@ endif
 
 all: caesar vigenere
 
-caesar: CaesarSolver.o CaesarRun.o
-	$(CC) $(CFLAGS) -o caesar CaesarSolver.o CaesarRun.o
+caesar: Caesar.o CaesarRun.o DataManipulation.o
+	$(CC) $(CFLAGS) -o caesar Caesar.o CaesarRun.o DataManipulation.o
 
-vigenere: CaesarSolver.o Vigenere.o DataManipulation.o VigenereRun.o
-	$(CC) $(CFLAGS) -o vigenere CaesarSolver.o Vigenere.o DataManipulation.o VigenereRun.o
+vigenere: Caesar.o Vigenere.o DataManipulation.o VigenereRun.o
+	$(CC) $(CFLAGS) -o vigenere Caesar.o Vigenere.o DataManipulation.o VigenereRun.o
 
 CaesarSolver.o: CaesarSolver.cpp
 	$(CC) -c CaesarSolver.cpp

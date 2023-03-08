@@ -3,10 +3,11 @@
 
 #include <iostream>
 #include <string>
-#include "CaesarSolver.h"
+#include "Caesar.h"
+#include "DataManipulation.h"
 
 // Returns an array with the frequency of each character in a given string
-int* CaesarSolver::getFrequencyOfLetters(std::string text){
+int* Caesar::getFrequencyOfLetters(std::string text){
     int* letterFrequency = new int[LANGUAGE_LETTER_COUNT + 1]; // Slot 27 is reserved for spaces
     for (int i = 0; i < LANGUAGE_LETTER_COUNT + 1; i++){
         letterFrequency[i] = 0;
@@ -18,7 +19,7 @@ int* CaesarSolver::getFrequencyOfLetters(std::string text){
 }
 
 // Transforms a letter into its number in the alphabet 0 - 25 (Spaces as 26)
-int CaesarSolver::convertLetterToNumber(char letter){
+int Caesar::convertLetterToNumber(char letter){
     if (letter == ' '){
         return LANGUAGE_LETTER_COUNT;
     }
@@ -26,14 +27,14 @@ int CaesarSolver::convertLetterToNumber(char letter){
 }
 
 // Transforms a number 0 - 25 into its letter in the alphabet
-char CaesarSolver::convertNumberToLetter(int number){
+char Caesar::convertNumberToLetter(int number){
     return static_cast<char>(number + 65);
 }
 
 // Returns an array of frequencies. For each possible Caesar shift, this will calculate how
 // closely the letter frequencies match English letter frequencies. (e.g. Index 0 will hold
 // how closely the frequencies match for a shift of 0.)
-double* CaesarSolver::getCorrelationOfFrequencies(std::string text){
+double* Caesar::getCorrelationOfFrequencies(std::string text){
     int* letterFrequencies = getFrequencyOfLetters(text);
     // Gets number of letters in text without spaces
     int numberOfLetters = text.length() - letterFrequencies[LANGUAGE_LETTER_COUNT];
@@ -54,7 +55,7 @@ double* CaesarSolver::getCorrelationOfFrequencies(std::string text){
 
 // Returns an array of INDICES. The indices represent the positions of the highest values
 // in the input array. The amount of top results to be returned is stored in topAmount.
-int* CaesarSolver::getTopShifts(double* frequencies, int topAmount){
+int* Caesar::getTopShifts(double* frequencies, int topAmount){
     // Make and initialize an array for the top values
     int* topResults = new int[topAmount];
     for (int i = 0; i < topAmount; i++){
@@ -97,7 +98,7 @@ int* CaesarSolver::getTopShifts(double* frequencies, int topAmount){
 // Prints the top most likely shift values, the frequency it matched
 // with English letter frequency using that shift, and the plaintext
 // translation for each shift.
-void CaesarSolver::printResults(){
+void Caesar::printResults(){
     std::cout << "\nTop " << TOP_NUM << " Shifts:\n";
     for (int i = 0; i < TOP_NUM; i++)
     {
@@ -108,7 +109,7 @@ void CaesarSolver::printResults(){
     }
 }
 
-std::string CaesarSolver::unshift(std::string ciphertext, int shift)
+std::string Caesar::unshift(std::string ciphertext, int shift)
 {
     int storeForShift;
     std::string result = "";
@@ -131,7 +132,41 @@ std::string CaesarSolver::unshift(std::string ciphertext, int shift)
 }
 
 // Returns unshifted string using the top result from the statistical attack
-std::string CaesarSolver::getDecodedStringWithTopFrequency()
+std::string Caesar::getDecodedStringWithTopFrequency()
 {
     return unshift(encryptedText, topShifts[0]);
+}
+
+std::string Caesar::encrypt(){
+    std::string text;
+    int key;
+
+    text = DataManipulation::getUserInput("Please enter the file name:", "Please enter the text to encrypt:");
+
+    std::cout << "\nHow much would you like to shift the text?\n";
+
+    key = DataManipulation::getIntegerInput(0, 25);
+
+    return encrypt(text, key);
+}
+
+std::string Caesar::encrypt(std::string text, int shift){
+    int storeForShift;
+    std::string result = "";
+    for (char i : text){
+        // If there is a space, there is no shift needed
+        if (i == ' '){
+            result += ' ';
+            continue;
+        }
+        // Shift character
+        storeForShift = convertLetterToNumber(i);
+        storeForShift += shift;
+        // Account for shift overflowing
+        if (storeForShift > 25){
+            storeForShift -= LANGUAGE_LETTER_COUNT;
+        }
+        result += convertNumberToLetter(storeForShift);
+    }
+    return result;
 }

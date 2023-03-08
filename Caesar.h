@@ -1,7 +1,7 @@
 // Winter Thomas and Ricardo Romanach
 
-#ifndef CAESARSOLVER_H
-#define CAESARSOLVER_H
+#ifndef CAESAR_H
+#define CAESAR_H
 
 #include <string>
 
@@ -9,7 +9,7 @@ const int LANGUAGE_LETTER_COUNT = 26;
 const double ENGLISH_ALPHABET_FREQUENCIES [LANGUAGE_LETTER_COUNT] = {0.080, 0.015, 0.030, 0.040, 0.130, 0.020, 0.015, 0.060, 0.065, 0.005, 0.005, 0.035, 0.030, 0.070, 0.080, 0.020, 0.002, 0.065, 0.060, 0.090, 0.030, 0.010, 0.015, 0.005, 0.020, 0.002};
 
 //This class accepts a ciphertext and uses a statistical attack to figure out the plaintext.
-class CaesarSolver
+class Caesar
 {
     private:
         const int TOP_NUM = 5;
@@ -18,7 +18,7 @@ class CaesarSolver
         int* topShifts;
     
     public:
-        CaesarSolver(std::string ciphertext)
+        Caesar(std::string ciphertext)
         {
             std::string upperCiphertext = "";
             for (int i : ciphertext) {
@@ -35,7 +35,7 @@ class CaesarSolver
             topShifts = getTopShifts(correlationFrequencies, TOP_NUM);
         }
 
-        ~CaesarSolver()
+        ~Caesar()
         {
             delete [] correlationFrequencies;
             delete [] topShifts;
@@ -50,6 +50,8 @@ class CaesarSolver
         static char convertNumberToLetter(int number);
         static double* getCorrelationOfFrequencies(std::string text);
         static int* getTopShifts(double* frequencies, int topAmount);
+        static std::string encrypt();
+        static std::string encrypt(std::string text, int shift);
 };
 
 #endif
