@@ -2,13 +2,21 @@
 
 #include <iostream>
 #include <string>
-#include "VigenereSolver.h"
+#include "Vigenere.h"
 #include "DataManipulation.h"
 
 int main(){
-    std::string encryptedText;
+    int userInput;
 
-    encryptedText = DataManipulation::getUserInput("Please enter the file name:", "Please enter a ciphertext:");
+    std::cout << "\nWould you like to encrypt or decrypt?\n";
+    std::cout << "1. Encrypt\n";
+    std::cout << "2. Decrypt\n";
+    userInput = DataManipulation::getIntegerInput(1, 2);
 
-    VigenereSolver::solveVigenere(encryptedText);
+    if (userInput == 1){
+        std::cout << "\n" << Vigenere::encrypt();
+    }
+    else {
+        Vigenere::solveVigenere(DataManipulation::getUserInput("Please enter the file name:", "Please enter a ciphertext:"));
+    }
 }

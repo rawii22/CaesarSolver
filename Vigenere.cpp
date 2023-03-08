@@ -1,7 +1,7 @@
 // Winter Thomas and Ricardo Romanach
 
 #include "CaesarSolver.h"
-#include "VigenereSolver.h"
+#include "Vigenere.h"
 #include "DataManipulation.h"
 #include <iomanip>
 #include <string>
@@ -12,7 +12,7 @@
 /////////////////////////
 
 // Solves the vigenere cipher and allows for the user to edit the solution
-void VigenereSolver::solveVigenere(std::string encryptedText){
+void Vigenere::solveVigenere(std::string encryptedText){
     // Simplify text for calculating period and keys
     std::string cleanEncryptedText = cleanText(encryptedText);
     // Set a max period to check for
@@ -155,7 +155,7 @@ void VigenereSolver::solveVigenere(std::string encryptedText){
 
 // Does all steps for decrypting a vigenere cypher automatically
 // hasExtraInfo also returns the period and the key in the returned string
-std::string VigenereSolver::solveMostLikelyVigenere(std::string encryptedText, bool hasExtraInfo){
+std::string Vigenere::solveMostLikelyVigenere(std::string encryptedText, bool hasExtraInfo){
     // Simplify text for calculating period and keys
     std::string cleanEncryptedText = cleanText(encryptedText);
     // Set a max period to check for
@@ -191,8 +191,61 @@ std::string VigenereSolver::solveMostLikelyVigenere(std::string encryptedText, b
 }
 
 // Prints the result of solveVigenere with extra info
-void VigenereSolver::printMostLikelyVigenere(std::string encryptedText){
+void Vigenere::printMostLikelyVigenere(std::string encryptedText){
     std::cout << solveMostLikelyVigenere(encryptedText, true);
+}
+
+std::string Vigenere::encrypt(){
+    std::string text;
+    std::string key;
+
+    text = DataManipulation::getUserInput("Please enter the file name:", "Please enter the text to encrypt:");
+
+    key = getKeyUserInput(text.length());
+
+    return encrypt(text, key);
+}
+
+std::string Vigenere::encrypt(std::string text, std::string key){
+    int period = key.length();
+    std::string encryptedText = "";
+    int currentAlphabet = 0;
+    int* keyArr = new int[period];
+    keyArr = convertStringToKey(key);
+
+    for (char character : text){
+        // If the character isn't a letter, just save the character and continue
+        if (!isalpha(character)){
+            encryptedText += character;
+            continue;
+        }
+        // Check if lowercase letter 
+        if (islower(character)){
+            character += keyArr[currentAlphabet];
+            // Check for underflow
+            if (!islower(character)){
+                character -= 26;
+            }   
+        }
+        // Check if uppercase letter
+        else {
+            character += keyArr[currentAlphabet];
+            // Check for underflow
+            if (!isupper(character)){
+                character -= 26;
+            }
+        }
+        encryptedText += character;
+
+        // Increment which alphabet is currently being used
+        currentAlphabet++;
+        if (currentAlphabet == period){
+            currentAlphabet = 0;
+        }
+    }
+    delete[] keyArr;
+
+    return encryptedText;
 }
 
 ///////////////////////////////
@@ -200,7 +253,7 @@ void VigenereSolver::printMostLikelyVigenere(std::string encryptedText){
 ///////////////////////////////
 
 // Determines the most likely period using Index of Correlation (IC) Values
-double* VigenereSolver::calculateIdealPeriod(std::string cleanEncryptedText, int maxPeriodChecked){
+double* Vigenere::calculateIdealPeriod(std::string cleanEncryptedText, int maxPeriodChecked){
     int numberOfAlphabetsSuggestingPeriodOfOne;
     std::string* alphabets;
     double* periodsList = new double[maxPeriodChecked];
@@ -226,7 +279,7 @@ double* VigenereSolver::calculateIdealPeriod(std::string cleanEncryptedText, int
 
 // Returns a 2D array that has for each alphabet (number of alphabets = period)
 // an array that contains the corerelation freqeuncy for each possible shift
-double** VigenereSolver::calculateKeys(std::string cleanEncryptedText, int period){
+double** Vigenere::calculateKeys(std::string cleanEncryptedText, int period){
     double** decodedAlphabetFrequencies = new double*[period];
     std::string* alphabets = splitAlphabets(cleanEncryptedText, period);
 
@@ -239,7 +292,7 @@ double** VigenereSolver::calculateKeys(std::string cleanEncryptedText, int perio
 }
 
 // Returns the most likely key from the information gathered from the alphabet frequencies
-int* VigenereSolver::calculateMostLikelyKey(double** decodedAlphabetFrequencies, int period){
+int* Vigenere::calculateMostLikelyKey(double** decodedAlphabetFrequencies, int period){
     int* key = new int[period];
 
     for (int i = 0; i < period; i++){
@@ -250,7 +303,7 @@ int* VigenereSolver::calculateMostLikelyKey(double** decodedAlphabetFrequencies,
 }
 
 // decrypts the provided string based off the period and key supplied to it
-std::string VigenereSolver::decodeVigenere(std::string encryptedText, int* key, int period){
+std::string Vigenere::decodeVigenere(std::string encryptedText, int* key, int period){
     std::string decryptedText = "";
     int currentAlphabet = 0;
 
@@ -296,7 +349,7 @@ std::string VigenereSolver::decodeVigenere(std::string encryptedText, int* key, 
 // This is used to calculate if the period of a key is valid. If this returns a value greater than 0.06,
 // then it is more likely that the period of the alphabet is one. If this is true for the majority of
 // the alphabets in a Vigenere cipher, then you have most likely selected a valid period length.
-double VigenereSolver::ICCalculator(std::string text){
+double Vigenere::ICCalculator(std::string text){
     int* freq = CaesarSolver::getFrequencyOfLetters(text);
     int totalLetters = 0;
 
@@ -316,7 +369,7 @@ double VigenereSolver::ICCalculator(std::string text){
 }
 
 // Splits the encrypted text into a number of alphabets equal to the calculated period and returns an array of the alphabets
-std::string* VigenereSolver::splitAlphabets(std::string cleanEncryptedText, int period){
+std::string* Vigenere::splitAlphabets(std::string cleanEncryptedText, int period){
     std::string* alphabets = new std::string[period];
     int periodTracker = 0;
 
@@ -334,7 +387,7 @@ std::string* VigenereSolver::splitAlphabets(std::string cleanEncryptedText, int 
 }
 
 // Removes all non letter characters and capitalizes lowercase letters
-std::string VigenereSolver::cleanText(std::string rawEncryptedText){
+std::string Vigenere::cleanText(std::string rawEncryptedText){
     std::string cleanText = "";
 
     for (char i : rawEncryptedText){
@@ -352,7 +405,7 @@ std::string VigenereSolver::cleanText(std::string rawEncryptedText){
 }
 
 // Returns the index of the highest value in an array
-int VigenereSolver::getHighestValueIndex(double* listOfValues, int sizeOfList){
+int Vigenere::getHighestValueIndex(double* listOfValues, int sizeOfList){
     int highestValueIndex = 0;
     double highestValue = listOfValues[0];;
 
@@ -368,7 +421,7 @@ int VigenereSolver::getHighestValueIndex(double* listOfValues, int sizeOfList){
 
 // Given a specified string and some internal settings, this function will print the individual letters of
 // that string inside a box with its index on top of it.
-void VigenereSolver::printLettersInBox(std::string text) {
+void Vigenere::printLettersInBox(std::string text) {
     // Character per line is set to 19 unless its shorter than the length of the text, at which its set to the text's length
     const int CHARACTERS_PER_ROW = text.length() > 19 ? 19 : text.length();
     const int SPACING = 5;
@@ -413,7 +466,7 @@ void VigenereSolver::printLettersInBox(std::string text) {
 
 // Takes the decrypted text and its key and puts them together so that it is visible
 // which part of the key goes to which part of the text
-std::string VigenereSolver::combineTextWithKey(std::string text, std::string key){
+std::string Vigenere::combineTextWithKey(std::string text, std::string key){
     const int CHARACTERS_PER_ROW = 101;
     int totalRows = ceil((double) text.length() / CHARACTERS_PER_ROW);
     int lastCharacterColumn = text.length() % CHARACTERS_PER_ROW;
@@ -473,7 +526,7 @@ std::string VigenereSolver::combineTextWithKey(std::string text, std::string key
 }
 
 // Asks the user for a key, validates it, and converts it to a string of all capital letters
-std::string VigenereSolver::getKeyUserInput(int maxKeyLength){
+std::string Vigenere::getKeyUserInput(int maxKeyLength){
     std::string userInput;
     bool hasBadInput;
 
@@ -522,7 +575,7 @@ std::string VigenereSolver::getKeyUserInput(int maxKeyLength){
 }
 
 // Takes the key as an integer array and returns it as a string of letters
-std::string VigenereSolver::convertKeyToString(int* key, int period){
+std::string Vigenere::convertKeyToString(int* key, int period){
     std::string stringKey = "";
 
     for (int i = 0; i < period; i++){
@@ -533,7 +586,7 @@ std::string VigenereSolver::convertKeyToString(int* key, int period){
 }
 
 // converts a key from a string to an integer array
-int* VigenereSolver::convertStringToKey(std::string stringKey){
+int* Vigenere::convertStringToKey(std::string stringKey){
     int keyLength = stringKey.length();
     int* key = new int[keyLength];
 
