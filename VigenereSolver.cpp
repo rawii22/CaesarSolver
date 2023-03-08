@@ -83,12 +83,12 @@ void VigenereSolver::solveVigenere(std::string encryptedText){
                 break;
 
             case 3:
-                // TODO: Print something to help user select which alphabet to change
+                std::cout << "\n";
                 printLettersInBox(convertKeyToString(key, period));
-                printTextWithKey(decryptedText, convertKeyToString(key, period));
+                std::cout << "\n" << combineTextWithKey(decryptedText, convertKeyToString(key, period));
 
                 // Get which alphabet to change
-                std::cout << "\nInput which alphabet to change:\n";
+                std::cout << "Input which alphabet to change:\n";
                 tempInput = DataManipulation::getIntegerInput(0, period);
 
                 // Remove the old alphabet's key from the list of most likely keys
@@ -102,12 +102,12 @@ void VigenereSolver::solveVigenere(std::string encryptedText){
                 break;
 
             case 4:
-                // TODO: Print something to help user select which alphabet to change
+                std::cout << "\n";
                 printLettersInBox(convertKeyToString(key, period));
-                printTextWithKey(decryptedText, convertKeyToString(key, period));
+                std::cout << "\n" << combineTextWithKey(decryptedText, convertKeyToString(key, period));
 
                 // Get which alphabet to change
-                std::cout << "\nInput which alphabet to change:\n";
+                std::cout << "Input which alphabet to change:\n";
                 tempInput = DataManipulation::getIntegerInput(0, period);
 
                 // Remove the old alphabet's key from the list of most likely keys
@@ -329,6 +329,7 @@ std::string* VigenereSolver::splitAlphabets(std::string cleanEncryptedText, int 
         //Resets counter if exceed period
         periodTracker %= period;
     }
+    
     return alphabets;
 }
 
@@ -363,6 +364,112 @@ int VigenereSolver::getHighestValueIndex(double* listOfValues, int sizeOfList){
     }
 
     return highestValueIndex;    
+}
+
+// Given a specified string and some internal settings, this function will print the individual letters of
+// that string inside a box with its index on top of it.
+void VigenereSolver::printLettersInBox(std::string text) {
+    // Character per line is set to 19 unless its shorter than the length of the text, at which its set to the text's length
+    const int CHARACTERS_PER_ROW = text.length() > 19 ? 19 : text.length();
+    const int SPACING = 5;
+    const int BOX_WIDTH = CHARACTERS_PER_ROW * SPACING + 2;
+    int textLength = text.size();
+
+    //Assuming each row of letters has CHARACTERS_PER_ROW characters with two spaces on each side
+    int rows = ceil((float)textLength / CHARACTERS_PER_ROW);
+
+    std::cout << std::setfill('-') << std::setw(BOX_WIDTH + SPACING - 1) << '-' << "\n";
+    int charactersPrinted = 0;
+    int numbersPrinted = 0;
+
+    for (int i = 0; i < rows; i++){
+        std::cout << std::setfill(' ') << "|" << std::setw(BOX_WIDTH + SPACING - 2) << "|" << "\n";
+
+        std::cout << "|";
+        for (int j = 0; j < CHARACTERS_PER_ROW; j++){
+            int current = j + (CHARACTERS_PER_ROW * i);
+            if (current < textLength){
+                std::cout << std::setw(SPACING) << current;
+                numbersPrinted++;
+            }
+        }
+        // This line takes care of the last "|" to be printed for each row. If a row is full, this should only add SPACING
+        // number of spaces. If the last line is not full, then it will figure out how many spaces need to go before the "|".
+        std::cout << std::setw(((CHARACTERS_PER_ROW - (numbersPrinted % CHARACTERS_PER_ROW)) % CHARACTERS_PER_ROW) * SPACING + SPACING) << "|" << "\n";
+        
+        std::cout << "|";
+        for (int j = 0; j < CHARACTERS_PER_ROW; j++){
+            if (charactersPrinted < textLength){
+                std::cout << std::setw(SPACING) << text.at(j + (CHARACTERS_PER_ROW * i));
+                charactersPrinted++;
+            }
+        }
+        std::cout << std::setw(((CHARACTERS_PER_ROW - (charactersPrinted % CHARACTERS_PER_ROW)) % CHARACTERS_PER_ROW) * SPACING + SPACING) << "|" << "\n";
+    }
+    
+    std::cout << "|" << std::setw(BOX_WIDTH + SPACING - 2) << "|" << "\n";
+    std::cout << std::setfill('-') << std::setw(BOX_WIDTH + SPACING - 1) << '-' << "\n";
+}
+
+// Takes the decrypted text and its key and puts them together so that it is visible
+// which part of the key goes to which part of the text
+std::string VigenereSolver::combineTextWithKey(std::string text, std::string key){
+    const int CHARACTERS_PER_ROW = 101;
+    int totalRows = ceil((double) text.length() / CHARACTERS_PER_ROW);
+    int lastCharacterColumn = text.length() % CHARACTERS_PER_ROW;
+    std::string finalText = "";
+    std::string textPart;
+    bool isLetter[CHARACTERS_PER_ROW];
+    char character;
+    int keyLength = key.length();
+    int keyPos = 0;
+
+    // For each row of text that will be in the output
+    for (int currentRow = 0; currentRow < totalRows; currentRow++){
+        textPart = "";
+
+        // For each column in that row
+        for (int currentColumn = 0; currentColumn < CHARACTERS_PER_ROW; currentColumn++){
+            // Get the character at that spot
+            character = text[currentRow * CHARACTERS_PER_ROW + currentColumn];
+            // save if its a letter or not
+            isLetter[currentColumn] = isalpha(character);
+            // And add the character to the text part
+            textPart += character;
+
+            // If last character stop
+            if (lastCharacterColumn == currentColumn && currentRow + 1 == totalRows){
+                break;
+            }
+        }
+
+        // For each column in the row
+        for (int currentColumn = 0; currentColumn < CHARACTERS_PER_ROW; currentColumn++){
+            // If that column is corresponding to a letter
+            if (isLetter[currentColumn]){
+                // Add the key part to the text
+                finalText += key[keyPos];
+                keyPos++;
+                if (keyPos == keyLength){
+                    keyPos = 0;
+                }
+            }
+            // Otherwise put a space
+            else {
+                finalText += " ";
+            }
+
+            // If last character stop
+            if (lastCharacterColumn == currentColumn && currentRow + 1 == totalRows){
+                break;
+            }
+        }
+        // Add the text part to the end of the key part with new lines so that it looks like
+        // each key part lines up with its text part
+        finalText += "\n" + textPart + "\n\n";
+    }
+
+    return finalText;
 }
 
 // Asks the user for a key, validates it, and converts it to a string of all capital letters
@@ -433,89 +540,6 @@ int* VigenereSolver::convertStringToKey(std::string stringKey){
     for (int i = 0; i < keyLength; i++){
         key[i] = CaesarSolver::convertLetterToNumber(stringKey[i]);
     }
+
     return key;
-}
-
-void VigenereSolver::printLettersInBox(std::string text)
-{
-    const int CHARACTERS_PER_ROW = 19;
-    const int SPACING = 5;
-    const int BOX_WIDTH = CHARACTERS_PER_ROW * SPACING + 2;
-    int textLength = text.size();
-
-    int rows = ceil((float)textLength / CHARACTERS_PER_ROW); //Assuming each row of letters has CHARACTERS_PER_ROW characters with two spaces on each side
-
-    std::cout << std::setfill('-') << std::setw(BOX_WIDTH + SPACING - 1) << '-' << "\n";
-    int charactersPrinted = 0;
-    int numbersPrinted = 0;
-
-    for (int i = 0; i < rows; i++){
-        std::cout << std::setfill(' ') << "|" << std::setw(BOX_WIDTH + SPACING - 2) << "|" << "\n";
-
-        std::cout << "|";
-        for (int j = 0; j < CHARACTERS_PER_ROW; j++){
-            int current = j + (CHARACTERS_PER_ROW * i);
-            if (current < textLength){
-                std::cout << std::setw(SPACING) << current;
-                numbersPrinted++;
-            }
-        }
-        // This line takes care of the last "|" to be printed for each row. If a row is full, this should only add SPACING
-        // number of spaces. If the last line is not full, then it will figure out how many spaces need to go before the "|".
-        std::cout << std::setw(((CHARACTERS_PER_ROW - (numbersPrinted % CHARACTERS_PER_ROW)) % CHARACTERS_PER_ROW) * SPACING + SPACING) << "|" << "\n";
-        
-        std::cout << "|";
-        for (int j = 0; j < CHARACTERS_PER_ROW; j++){
-            if (charactersPrinted < textLength){
-                std::cout << std::setw(SPACING) << text.at(j + (CHARACTERS_PER_ROW * i));
-                charactersPrinted++;
-            }
-        }
-        std::cout << std::setw(((CHARACTERS_PER_ROW - (charactersPrinted % CHARACTERS_PER_ROW)) % CHARACTERS_PER_ROW) * SPACING + SPACING) << "|" << "\n";
-    }
-    
-    std::cout << "|" << std::setw(BOX_WIDTH + SPACING - 2) << "|" << "\n";
-    std::cout << std::setfill('-') << std::setw(BOX_WIDTH + SPACING - 1) << '-' << "\n";
-
-}
-
-void VigenereSolver::printTextWithKey(std::string text, std::string key)
-{
-    const int CHARACTERS_PER_LINE = 60;
-    int textLength = text.length();
-    int keyLength = key.length();
-    int positionInKey = 0;
-    int positionInText = 0;
-    int positionInTextOld = 0;
-    int rowCount = ceil((float)textLength / CHARACTERS_PER_LINE);
-    std::string finalText = "";
-
-    for (int i = 0; i < rowCount; i++){
-        positionInTextOld = positionInText;
-        for (int j = 0; j < CHARACTERS_PER_LINE; j++){
-            if (((i*CHARACTERS_PER_LINE)+j < textLength) && isalpha(text.at(positionInText))){
-                finalText += key.at(positionInKey);
-                positionInKey++;
-                positionInKey = positionInKey % keyLength;
-                positionInText++;
-            }
-            else {
-                finalText += " ";
-                positionInText++;
-            }
-        }
-        positionInText = positionInTextOld;
-        finalText += "\n";
-        for (int j = 0; j < CHARACTERS_PER_LINE; j++){
-            if (positionInText == textLength) {
-                finalText += "\n\n";
-                std::cout << finalText;
-                return;
-            }
-            finalText += text.at(positionInText);
-            positionInText++;
-        }
-        finalText += "\n\n";
-    }
-    std::cout << finalText;
 }

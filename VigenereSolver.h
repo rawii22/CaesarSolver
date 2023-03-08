@@ -32,12 +32,12 @@ class VigenereSolver
 
         static std::string cleanText(std::string rawEncryptedText);
         static int getHighestValueIndex(double* listOfValues, int sizeOfList);
+        static void printLettersInBox(std::string text);
+        static std::string combineTextWithKey(std::string text, std::string key);
 
         static std::string getKeyUserInput(int maxKeyLength);
         static std::string convertKeyToString(int* key, int period);
         static int* convertStringToKey(std::string stringKey);
-        static void printLettersInBox(std::string text);
-        static void printTextWithKey(std::string text, std::string key);
 };
 
 #endif
