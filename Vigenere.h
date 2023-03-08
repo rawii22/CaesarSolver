@@ -1,24 +1,26 @@
 // Winter Thomas and Ricardo Romanach
 
-#ifndef VIGENERESOLVER_H
-#define VIGENERESOLVER_H
+#ifndef VIGENERE_H
+#define VIGENERE_H
 
 #include <iostream>
 #include <string>
 
 const double VALUE_SUGGESTING_PERIOD_OF_ONE = 0.0590655;
 
-class VigenereSolver
+class Vigenere
 {
     private:
-        VigenereSolver(){}
-        ~VigenereSolver(){}
+        Vigenere(){}
+        ~Vigenere(){}
 
     public:
         // Main functions the user will use
         static void solveVigenere(std::string encryptedText);
         static std::string solveMostLikelyVigenere(std::string encryptedText, bool hasExtraInfo = false);
         static void printMostLikelyVigenere(std::string encryptedText);
+        static std::string encrypt();
+        static std::string encrypt(std::string text, std::string key);
 
         // Core functions for decrypting
         static double* calculateIdealPeriod(std::string cleanEncryptedText, int maxPeriodChecked);

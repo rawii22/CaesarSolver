@@ -19,8 +19,8 @@ all: caesar vigenere
 caesar: CaesarSolver.cpp CaesarRun.cpp
 	$(CC) $(CFLAGS) -o caesar CaesarSolver.cpp CaesarRun.cpp
 
-vigenere: CaesarSolver.cpp VigenereSolver.cpp DataManipulation.cpp VigenereRun.cpp
-	$(CC) $(CFLAGS) -o vigenere CaesarSolver.cpp VigenereSolver.cpp DataManipulation.cpp VigenereRun.cpp
+vigenere: CaesarSolver.cpp Vigenere.cpp DataManipulation.cpp VigenereRun.cpp
+	$(CC) $(CFLAGS) -o vigenere CaesarSolver.cpp Vigenere.cpp DataManipulation.cpp VigenereRun.cpp
 
 clean:
 	$(RM) caesar$(EXT) vigenere$(EXT) a$(EXT)
