@@ -317,7 +317,7 @@ std::string Vigenere::decodeVigenere(std::string encryptedText, int* key, int pe
         if (islower(character)){
             character -= key[currentAlphabet];
             // Check for underflow
-            if (character < 97){
+            if (!islower(character)){
                 character += 26;
             }   
         }
@@ -325,7 +325,7 @@ std::string Vigenere::decodeVigenere(std::string encryptedText, int* key, int pe
         else {
             character -= key[currentAlphabet];
             // Check for underflow
-            if (character < 65){
+            if (!isupper(character)){
                 character += 26;
             }
         }
