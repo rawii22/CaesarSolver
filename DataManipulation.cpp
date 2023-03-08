@@ -15,7 +15,7 @@ std::string DataManipulation::readStringFromFile(std::string fileName){
     if (inputFile.is_open()){
         // Check if file is empty
         if (inputFile.eof()){
-            std::cout << "File is empty";
+            std::cout << "\nFile is empty";
             return "";
         }
 
@@ -43,7 +43,7 @@ void DataManipulation::writeStringToFile(std::string fileName, std::string strin
         outputFile.close();
     }
     else {
-        std::cout << "\nFile" << fileName << "failed to open";
+        std::cout << "\nFile" << fileName << "failed to open\n";
     }
 }
 
@@ -56,7 +56,7 @@ std::string DataManipulation::getUserInput(std::string fileCustomMessage, std::s
     while (userInput != "1" && userInput != "2"){
         std::cout << "\nPlease make a selection\n";
         std::cout << "1. Get input from file\n";
-        std::cout << "2. Get input from user\n";
+        std::cout << "2. Get input from user\n> ";
         getline(std::cin, userInput);
     }
 
@@ -64,20 +64,93 @@ std::string DataManipulation::getUserInput(std::string fileCustomMessage, std::s
     if (userInput == "1"){
         userInput = "";
         while (userInput.empty()){
-            std::cout << "\n\n" << fileCustomMessage << "\n";
+            std::cout << "\n" << fileCustomMessage << "\n> ";
             getline(std::cin, userInput);
             userInput = readStringFromFile(userInput);
         }
     }
-    
+
     // Manual user input
     else {
         userInput = "";
         while (userInput.empty()){
-            std::cout << "\n\n" << manualCustomMessage << "\n";
+            std::cout << "\n" << manualCustomMessage << "\n> ";
             getline(std::cin, userInput);
         }
     }
         
     return userInput;
+}
+
+// Takes a user input and returns the string as an input
+// Range values are inclusive.
+int DataManipulation::getIntegerInput(int lowRange, int highRange){
+    std::string userInput;
+    int integerInput;
+
+    while (true){
+        std::cout << "> ";
+        getline(std::cin, userInput);
+
+        // Check that the user typed something
+        if (userInput.empty()){
+            std::cout << "\nPlease enter a valid option.\n";
+            continue;
+        }
+
+        // Convert the first character to an integer
+        try {
+            integerInput = std::stoi(userInput);
+        }
+        catch (const std::exception& e){
+            std::cout << "\nPlease enter a valid input.\n";
+            continue;
+        }
+
+        // Check to make sure the input is in range
+        if (!(lowRange <= integerInput && integerInput <= highRange)){
+            std::cout << "\nPlease enter a valid input\n";
+            continue;
+        }
+
+        return integerInput;
+    }
+}
+
+// Takes the first character of a user input and if its a letter
+// Returns it as a capital letter
+char DataManipulation::getLetterInput(){
+    std::string userInput;
+    char charInput;
+
+    while (true){
+        std::cout << "> ";
+        getline(std::cin, userInput);
+
+        // Check that the user typed something
+        if (userInput.empty()){
+            std::cout << "\nPlease enter a valid option.\n";
+            continue;
+        }
+
+        // Make sure its only a single character
+        if (userInput.length() > 1){
+            std::cout << "\nPlease only enter a single letter.\n";
+            continue;
+        }
+
+        // Grabs the character
+        charInput = userInput[0];
+
+        // Check if the character is a lowercase letter
+        if (islower(charInput)){
+            return toupper(charInput);
+        }
+        // Check if the character is a capital letter
+        else if (isupper(charInput)){
+            return charInput;
+        }
+        // If not a letter
+        std::cout << "\nPlease enter a valid option.\n";
+    }
 }

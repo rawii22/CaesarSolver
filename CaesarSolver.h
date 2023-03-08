@@ -22,10 +22,10 @@ class CaesarSolver
         {
             std::string upperCiphertext = "";
             for (int i : ciphertext) {
-                if (i >= 97 && i <= 122) { // Capitalize the lower letters
+                if (islower(i)) { // Capitalize the lower letters
                     upperCiphertext += toupper(i);
                 }
-                else if (i == 32 || (i >= 65 && i <= 90)) { // Include spaces and exclude all other characters
+                else if (i == 32 || isupper(i)) { // Include spaces and capital letters while excluding all other characters
                     upperCiphertext += i;
                 }
             }
