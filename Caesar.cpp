@@ -36,15 +36,12 @@ int* Caesar::getFrequencyOfLetters(std::string text){
 
 // Transforms a letter into its number in the alphabet 0 - 25 (Spaces as 26)
 int Caesar::convertLetterToNumber(char letter){
-    if (letter == ' '){
-        return LANGUAGE_LETTER_COUNT;
-    }
-    return int(letter) - 65;
+    return letter - 65;
 }
 
 // Transforms a number 0 - 25 into its letter in the alphabet
 char Caesar::convertNumberToLetter(int number){
-    return static_cast<char>(number + 65);
+    return number + 65;
 }
 
 // Returns an array of frequencies. For each possible Caesar shift, this will calculate how
@@ -162,7 +159,7 @@ std::string Caesar::unshift(std::string ciphertext, int shift)
 }
 
 // Returns unshifted string using the top result from the statistical attack
-std::string Caesar::getDecodedStringWithTopFrequency()
+std::string Caesar::getDecodedStringWithTopFrequency(std::string encryptedText, int* topShifts)
 {
     return unshift(encryptedText, topShifts[0]);
 }

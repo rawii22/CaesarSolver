@@ -12,38 +12,13 @@ const double ENGLISH_ALPHABET_FREQUENCIES [LANGUAGE_LETTER_COUNT] = {0.080, 0.01
 class Caesar
 {
     private:
-        const int TOP_NUM = 5;
-        std::string encryptedText;
-        double* correlationFrequencies;
-        int* topShifts;
+        Caesar(){}
+        ~Caesar(){}
     
     public:
-        Caesar(std::string ciphertext)
-        {
-            std::string upperCiphertext = "";
-            for (int i : ciphertext) {
-                if (islower(i)) { // Capitalize the lower letters
-                    upperCiphertext += toupper(i);
-                }
-                else if (i == 32 || isupper(i)) { // Include spaces and capital letters while excluding all other characters
-                    upperCiphertext += i;
-                }
-            }
-
-            encryptedText = upperCiphertext;
-            correlationFrequencies = getCorrelationOfFrequencies(encryptedText);
-            topShifts = getTopShifts(correlationFrequencies, TOP_NUM);
-        }
-
-        ~Caesar()
-        {
-            delete [] correlationFrequencies;
-            delete [] topShifts;
-        }
-        
         static void solveCaesar(std::string encryptedText, int numberOfResults);
         static void printResults(int* topShifts, double* correlationFrequencies, int numberOfResults, std::string encryptedText);
-        std::string getDecodedStringWithTopFrequency();
+        static std::string getDecodedStringWithTopFrequency(std::string encryptedText, int* TopShifts);
 
         static std::string unshift(std::string ciphertext, int shift);
         static int* getFrequencyOfLetters(std::string text);
