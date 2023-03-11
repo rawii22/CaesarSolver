@@ -135,7 +135,7 @@ std::string Caesar::unshift(std::string ciphertext, int shift)
     for (char i : ciphertext){
         // If there is a non letter no shift is needed
         if (!isalpha(i)){
-            result += ' ';
+            result += i;
             continue;
         }
 
