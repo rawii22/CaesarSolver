@@ -7,6 +7,7 @@
 
 int main(){
     int userInput;
+    int numberOfResults = 5;
 
     std::cout << "\nWould you like to encrypt or decrypt?\n";
     std::cout << "1. Encrypt\n";
@@ -19,10 +20,10 @@ int main(){
     else {
         std::string encryptedText = "";
         while (encryptedText.empty()) {
-            std::cout << "Please enter a ciphertext:\n";
+            std::cout << "\nPlease enter a ciphertext:\n";
             getline(std::cin, encryptedText);
         }
-        Caesar caesarSolver(encryptedText);
-        caesarSolver.printResults();
+
+        Caesar::solveCaesar(encryptedText, numberOfResults);
     }
 }

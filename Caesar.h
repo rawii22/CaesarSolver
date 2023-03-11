@@ -40,8 +40,9 @@ class Caesar
             delete [] correlationFrequencies;
             delete [] topShifts;
         }
-
-        void printResults();
+        
+        static void solveCaesar(std::string encryptedText, int numberOfResults);
+        static void printResults(int* topShifts, double* correlationFrequencies, int numberOfResults, std::string encryptedText);
         std::string getDecodedStringWithTopFrequency();
 
         static std::string unshift(std::string ciphertext, int shift);

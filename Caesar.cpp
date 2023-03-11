@@ -6,15 +6,31 @@
 #include "Caesar.h"
 #include "DataManipulation.h"
 
-// Returns an array with the frequency of each character in a given string
+// Does all steps for decrypting a caesar cypher automatically
+void Caesar::solveCaesar(std::string encryptedText, int numberOfResults){
+    // Remove all non letters from the encrypted text
+    std::string cleanEncryptedText = cleanText(encryptedText);
+    // Get the correlation Frequencies for the clean text
+    double* correlationFrequencies = getCorrelationOfFrequencies(cleanEncryptedText);
+    // Get the indexs of the most likely results
+    int* topShifts = getTopShifts(correlationFrequencies, numberOfResults);
+    // print the solution(s)
+    printResults(topShifts, correlationFrequencies, numberOfResults, encryptedText);
+
+    delete[] correlationFrequencies;
+    delete[] topShifts;
+}
+
+// Returns an array with the frequency of each letter in a given string
 int* Caesar::getFrequencyOfLetters(std::string text){
-    int* letterFrequency = new int[LANGUAGE_LETTER_COUNT + 1]; // Slot 27 is reserved for spaces
-    for (int i = 0; i < LANGUAGE_LETTER_COUNT + 1; i++){
+    int* letterFrequency = new int[LANGUAGE_LETTER_COUNT];
+    for (int i = 0; i < LANGUAGE_LETTER_COUNT; i++){
         letterFrequency[i] = 0;
     }
     for (char i : text){
-        letterFrequency[convertLetterToNumber(i)]++;
+        letterFrequency[convertLetterToNumber(toupper(i))]++;
     }
+
     return letterFrequency;
 }
 
@@ -36,11 +52,12 @@ char Caesar::convertNumberToLetter(int number){
 // how closely the frequencies match for a shift of 0.)
 double* Caesar::getCorrelationOfFrequencies(std::string text){
     int* letterFrequencies = getFrequencyOfLetters(text);
-    // Gets number of letters in text without spaces
-    int numberOfLetters = text.length() - letterFrequencies[LANGUAGE_LETTER_COUNT];
+    // Gets number of letters in text
+    int numberOfLetters = text.length();
     double total;
     double* correlationFrequencies = new double [LANGUAGE_LETTER_COUNT];
 
+    // For each possible shift
     for (int i = 0; i < LANGUAGE_LETTER_COUNT; i++){
         total = 0;
         for (int j = 0; j < LANGUAGE_LETTER_COUNT; j++){
@@ -49,6 +66,8 @@ double* Caesar::getCorrelationOfFrequencies(std::string text){
         }
         correlationFrequencies[i] = total;
     }
+
+    delete[] letterFrequencies;
 
     return correlationFrequencies;
 }
@@ -98,9 +117,9 @@ int* Caesar::getTopShifts(double* frequencies, int topAmount){
 // Prints the top most likely shift values, the frequency it matched
 // with English letter frequency using that shift, and the plaintext
 // translation for each shift.
-void Caesar::printResults(){
-    std::cout << "\nTop " << TOP_NUM << " Shifts:\n";
-    for (int i = 0; i < TOP_NUM; i++)
+void Caesar::printResults(int* topShifts, double* correlationFrequencies, int numberOfResults, std::string encryptedText){
+    std::cout << "\nTop " << numberOfResults << " Shifts:\n";
+    for (int i = 0; i < numberOfResults; i++)
     {
         std::cout << "Shift = " << topShifts[i] << "\tFrequency = " << correlationFrequencies[topShifts[i]] << "\n";
         // For each letter in the encrypted text, shift and print
@@ -114,20 +133,31 @@ std::string Caesar::unshift(std::string ciphertext, int shift)
     int storeForShift;
     std::string result = "";
     for (char i : ciphertext){
-        // If there is a space, there is no shift needed
-        if (i == ' '){
+        // If there is a non letter no shift is needed
+        if (!isalpha(i)){
             result += ' ';
             continue;
         }
+
         // Shift character
-        storeForShift = convertLetterToNumber(i);
+        storeForShift = convertLetterToNumber(toupper(i));
         storeForShift -= shift;
+
         // Account for shift overflowing
         if (storeForShift < 0){
             storeForShift += LANGUAGE_LETTER_COUNT;
         }
-        result += convertNumberToLetter(storeForShift);
+
+        // If letter is capital
+        if (isupper(i)){
+            result += convertNumberToLetter(storeForShift);
+        }
+        // If letter is lowercase
+        else {
+            result += tolower(convertNumberToLetter(storeForShift));
+        }
     }
+
     return result;
 }
 
