@@ -170,3 +170,21 @@ std::string Caesar::encrypt(std::string text, int shift){
     }
     return result;
 }
+
+// Removes all non letter characters and capitalizes lowercase letters
+std::string Caesar::cleanText(std::string rawEncryptedText){
+    std::string cleanText = "";
+
+    for (char i : rawEncryptedText){
+        if (i != ' '){
+            if (islower(i)){ // Capitalize the lower letters
+                cleanText += toupper(i);
+            }
+            else if (isupper(i)){ // Include capital letters
+                cleanText += i;
+            }
+        }
+    }
+
+    return cleanText;
+}

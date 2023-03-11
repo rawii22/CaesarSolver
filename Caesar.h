@@ -52,6 +52,7 @@ class Caesar
         static int* getTopShifts(double* frequencies, int topAmount);
         static std::string encrypt();
         static std::string encrypt(std::string text, int shift);
+        static std::string cleanText(std::string rawEncryptedText);
 };
 
 #endif

@@ -14,7 +14,7 @@
 // Solves the vigenere cipher and allows for the user to edit the solution
 void Vigenere::solveVigenere(std::string encryptedText){
     // Simplify text for calculating period and keys
-    std::string cleanEncryptedText = cleanText(encryptedText);
+    std::string cleanEncryptedText = Caesar::cleanText(encryptedText);
     // Set a max period to check for
     int maxPeriodChecked = sqrt(cleanEncryptedText.length()) + 1;
     // Calculate the most likely periods
@@ -157,7 +157,7 @@ void Vigenere::solveVigenere(std::string encryptedText){
 // hasExtraInfo also returns the period and the key in the returned string
 std::string Vigenere::solveMostLikelyVigenere(std::string encryptedText, bool hasExtraInfo){
     // Simplify text for calculating period and keys
-    std::string cleanEncryptedText = cleanText(encryptedText);
+    std::string cleanEncryptedText = Caesar::cleanText(encryptedText);
     // Set a max period to check for
     int maxPeriodChecked = sqrt(cleanEncryptedText.length()) + 1;
     // Calculate the most likely periods
@@ -384,24 +384,6 @@ std::string* Vigenere::splitAlphabets(std::string cleanEncryptedText, int period
     }
     
     return alphabets;
-}
-
-// Removes all non letter characters and capitalizes lowercase letters
-std::string Vigenere::cleanText(std::string rawEncryptedText){
-    std::string cleanText = "";
-
-    for (char i : rawEncryptedText){
-        if (i != ' '){
-            if (islower(i)){ // Capitalize the lower letters
-                cleanText += toupper(i);
-            }
-            else if (isupper(i)){ // Include capital letters
-                cleanText += i;
-            }
-        }
-    }
-
-    return cleanText;
 }
 
 // Returns the index of the highest value in an array
