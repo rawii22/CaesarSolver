@@ -129,14 +129,15 @@ std::string Caesar::unshift(std::string ciphertext, int shift)
 {
     int storeForShift;
     std::string result = "";
+
     for (char i : ciphertext){
-        // If there is a non letter no shift is needed
+        // If there is a non letter, no shift is needed
         if (!isalpha(i)){
             result += i;
             continue;
         }
 
-        // Shift character
+        // Shift letter
         storeForShift = convertLetterToNumber(toupper(i));
         storeForShift -= shift;
 
@@ -174,26 +175,39 @@ std::string Caesar::encrypt(){
 
     key = DataManipulation::getIntegerInput(0, 25);
 
+    std::cout << "\n";
+
     return encrypt(text, key);
 }
 
 std::string Caesar::encrypt(std::string text, int shift){
     int storeForShift;
     std::string result = "";
+
     for (char i : text){
-        // If there is a space, there is no shift needed
-        if (i == ' '){
-            result += ' ';
+        // If there is a non letter, no shift is needed
+        if (!isalpha(i)){
+            result += i;
             continue;
         }
-        // Shift character
-        storeForShift = convertLetterToNumber(i);
+
+        // Shift letter
+        storeForShift = convertLetterToNumber(toupper(i));
         storeForShift += shift;
+        
         // Account for shift overflowing
         if (storeForShift > 25){
             storeForShift -= LANGUAGE_LETTER_COUNT;
         }
-        result += convertNumberToLetter(storeForShift);
+        
+        // If letter is capital
+        if (isupper(i)){
+            result += convertNumberToLetter(storeForShift);
+        }
+        // If letter is lowercase
+        else {
+            result += tolower(convertNumberToLetter(storeForShift));
+        }
     }
     return result;
 }

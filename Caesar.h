@@ -18,7 +18,7 @@ class Caesar
     public:
         static void solveCaesar(std::string encryptedText, int numberOfResults);
         static void printResults(int* topShifts, double* correlationFrequencies, int numberOfResults, std::string encryptedText);
-        static std::string getDecodedStringWithTopFrequency(std::string encryptedText, int* TopShifts);
+        static std::string getDecodedStringWithTopFrequency(std::string encryptedText, int* topShifts);
 
         static std::string unshift(std::string ciphertext, int shift);
         static int* getFrequencyOfLetters(std::string text);
