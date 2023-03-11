@@ -51,28 +51,22 @@ void DataManipulation::writeStringToFile(std::string fileName, std::string strin
 // then prompts for file name and reads returns its contents
 // or prompts user for input and returns that
 std::string DataManipulation::getUserInput(std::string fileCustomMessage, std::string manualCustomMessage){
-    std::string userInput;
+    std::string userInput = "";
 
-    while (userInput != "1" && userInput != "2"){
-        std::cout << "\nPlease make a selection\n";
-        std::cout << "1. Get input from file\n";
-        std::cout << "2. Get input from user\n> ";
-        getline(std::cin, userInput);
-    }
+    std::cout << "\nPlease make a selection\n";
+    std::cout << "1. Get input from file\n";
+    std::cout << "2. Get input from user\n";
 
     // Reading from a file
-    if (userInput == "1"){
-        userInput = "";
+    if (getIntegerInput(1,2) == 1){
         while (userInput.empty()){
             std::cout << "\n" << fileCustomMessage << "\n> ";
             getline(std::cin, userInput);
             userInput = readStringFromFile(userInput);
         }
     }
-
     // Manual user input
     else {
-        userInput = "";
         while (userInput.empty()){
             std::cout << "\n" << manualCustomMessage << "\n> ";
             getline(std::cin, userInput);
