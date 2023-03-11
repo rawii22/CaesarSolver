@@ -18,12 +18,6 @@ int main(){
         std::cout << Caesar::encrypt();
     }
     else {
-        std::string encryptedText = "";
-        while (encryptedText.empty()) {
-            std::cout << "\nPlease enter a ciphertext:\n";
-            getline(std::cin, encryptedText);
-        }
-
-        Caesar::solveCaesar(encryptedText, numberOfResults);
+        Caesar::solveCaesar(DataManipulation::getUserInput("Please enter the file name:", "Please enter a ciphertext:"), numberOfResults);
     }
 }
