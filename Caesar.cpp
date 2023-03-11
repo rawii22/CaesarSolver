@@ -175,8 +175,6 @@ std::string Caesar::encrypt(){
 
     key = DataManipulation::getIntegerInput(0, 25);
 
-    std::cout << "\n";
-
     return encrypt(text, key);
 }
 

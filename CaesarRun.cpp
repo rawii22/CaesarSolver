@@ -15,7 +15,17 @@ int main(){
     userInput = DataManipulation::getIntegerInput(1, 2);
     
     if (userInput == 1){
-        std::cout << Caesar::encrypt();
+        std::string encryptedText = Caesar::encrypt();
+        std::cout << "\n" << encryptedText;
+
+        std::cout << "\n\nWould you like to write the text to a file? Y/[N]\n";
+        userInput = DataManipulation::getLetterInput();
+        if (userInput == 'Y' || userInput == 'y'){
+            std::string fileName;
+            std::cout << "\nWhat file would you like to output to?\n> ";
+            getline(std::cin, fileName);
+            DataManipulation::writeStringToFile(fileName, encryptedText);
+        }
     }
     else {
         Caesar::solveCaesar(DataManipulation::getUserInput("Please enter the file name:", "Please enter a ciphertext:"), numberOfResults);
