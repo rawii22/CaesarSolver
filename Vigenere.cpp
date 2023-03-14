@@ -224,7 +224,7 @@ std::string Vigenere::encrypt(std::string text, std::string key){
             character += keyArr[currentAlphabet];
             // Check for underflow
             if (!islower(character)){
-                character -= 26;
+                character -= LANGUAGE_LETTER_COUNT;
             }   
         }
         // Check if uppercase letter
@@ -232,7 +232,7 @@ std::string Vigenere::encrypt(std::string text, std::string key){
             character += keyArr[currentAlphabet];
             // Check for underflow
             if (!isupper(character)){
-                character -= 26;
+                character -= LANGUAGE_LETTER_COUNT;
             }
         }
         encryptedText += character;
@@ -318,7 +318,7 @@ std::string Vigenere::decodeVigenere(std::string encryptedText, int* key, int pe
             character -= key[currentAlphabet];
             // Check for underflow
             if (!islower(character)){
-                character += 26;
+                character += LANGUAGE_LETTER_COUNT;
             }   
         }
         // Check if uppercase letter
@@ -326,7 +326,7 @@ std::string Vigenere::decodeVigenere(std::string encryptedText, int* key, int pe
             character -= key[currentAlphabet];
             // Check for underflow
             if (!isupper(character)){
-                character += 26;
+                character += LANGUAGE_LETTER_COUNT;
             }
         }
         decryptedText += character;
