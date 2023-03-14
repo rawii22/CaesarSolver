@@ -6,7 +6,12 @@
 #include "Caesar.h"
 #include "DataManipulation.h"
 
+/////////////////////////
+// Main User Functions //
+/////////////////////////
+
 // Does all steps for decrypting a caesar cypher automatically
+// numberOfResults can be 1 to 26
 void Caesar::solveCaesar(std::string encryptedText, int numberOfResults){
     // Remove all non letters from the encrypted text
     std::string cleanEncryptedText = cleanText(encryptedText);
@@ -21,28 +26,98 @@ void Caesar::solveCaesar(std::string encryptedText, int numberOfResults){
     delete[] topShifts;
 }
 
-// Returns an array with the frequency of each letter in a given string
-int* Caesar::getFrequencyOfLetters(std::string text){
-    int* letterFrequency = new int[LANGUAGE_LETTER_COUNT];
-    for (int i = 0; i < LANGUAGE_LETTER_COUNT; i++){
-        letterFrequency[i] = 0;
+// Returns unshifted string using the top result from the statistical attack
+std::string Caesar::getDecodedStringWithTopFrequency(std::string encryptedText, int* topShifts)
+{
+    return decrypt(encryptedText, topShifts[0]);
+}
+
+// When provided an text and a shift, it unshifts the text by that amount
+// Primarily used for decrypting
+std::string Caesar::decrypt(std::string ciphertext, int shift){
+    int storeForShift;
+    std::string result = "";
+
+    for (char i : ciphertext){
+        // If there is a non letter, no shift is needed
+        if (!isalpha(i)){
+            result += i;
+            continue;
+        }
+
+        // Shift letter
+        storeForShift = convertLetterToNumber(toupper(i));
+        storeForShift -= shift;
+
+        // Account for shift overflowing
+        if (storeForShift < 0){
+            storeForShift += LANGUAGE_LETTER_COUNT;
+        }
+
+        // If letter is capital
+        if (isupper(i)){
+            result += convertNumberToLetter(storeForShift);
+        }
+        // If letter is lowercase
+        else {
+            result += tolower(convertNumberToLetter(storeForShift));
+        }
     }
+
+    return result;
+}
+
+// Prompts for a text and a shift amount and then shifts the text by that amount
+std::string Caesar::encrypt(){
+    std::string text;
+    int key;
+
+    text = DataManipulation::getUserInput("Please enter the file name:", "Please enter the text to encrypt:");
+
+    std::cout << "\nHow much would you like to shift the text?\n";
+
+    key = DataManipulation::getIntegerInput(0, 25);
+
+    return encrypt(text, key);
+}
+
+// When provided a text and a shift, it shifts the text by that amount
+// Primarily used for encrypting
+std::string Caesar::encrypt(std::string text, int shift){
+    int storeForShift;
+    std::string result = "";
+
     for (char i : text){
-        letterFrequency[convertLetterToNumber(toupper(i))]++;
+        // If there is a non letter, no shift is needed
+        if (!isalpha(i)){
+            result += i;
+            continue;
+        }
+
+        // Shift letter
+        storeForShift = convertLetterToNumber(toupper(i));
+        storeForShift += shift;
+        
+        // Account for shift overflowing
+        if (storeForShift > 25){
+            storeForShift -= LANGUAGE_LETTER_COUNT;
+        }
+        
+        // If letter is capital
+        if (isupper(i)){
+            result += convertNumberToLetter(storeForShift);
+        }
+        // If letter is lowercase
+        else {
+            result += tolower(convertNumberToLetter(storeForShift));
+        }
     }
-
-    return letterFrequency;
+    return result;
 }
 
-// Transforms a letter into its number in the alphabet 0 - 25 (Spaces as 26)
-int Caesar::convertLetterToNumber(char letter){
-    return letter - 65;
-}
-
-// Transforms a number 0 - 25 into its letter in the alphabet
-char Caesar::convertNumberToLetter(int number){
-    return number + 65;
-}
+////////////////////
+// Core Functions //
+////////////////////
 
 // Returns an array of frequencies. For each possible Caesar shift, this will calculate how
 // closely the letter frequencies match English letter frequencies. (e.g. Index 0 will hold
@@ -71,6 +146,7 @@ double* Caesar::getCorrelationOfFrequencies(std::string text){
 
 // Returns an array of INDICES. The indices represent the positions of the highest values
 // in the input array. The amount of top results to be returned is stored in topAmount.
+// topAmount can be 1 to 26
 int* Caesar::getTopShifts(double* frequencies, int topAmount){
     // Make and initialize an array for the top values
     int* topResults = new int[topAmount];
@@ -120,108 +196,55 @@ void Caesar::printResults(int* topShifts, double* correlationFrequencies, int nu
     {
         std::cout << "Shift = " << topShifts[i] << "\tFrequency = " << correlationFrequencies[topShifts[i]] << "\n";
         // For each letter in the encrypted text, shift and print
-        std::cout << unshift(encryptedText, topShifts[i]);
+        std::cout << decrypt(encryptedText, topShifts[i]);
         std::cout << "\n\n";
     }
 }
 
-std::string Caesar::unshift(std::string ciphertext, int shift)
-{
-    int storeForShift;
-    std::string result = "";
-
-    for (char i : ciphertext){
-        // If there is a non letter, no shift is needed
-        if (!isalpha(i)){
-            result += i;
-            continue;
-        }
-
-        // Shift letter
-        storeForShift = convertLetterToNumber(toupper(i));
-        storeForShift -= shift;
-
-        // Account for shift overflowing
-        if (storeForShift < 0){
-            storeForShift += LANGUAGE_LETTER_COUNT;
-        }
-
-        // If letter is capital
-        if (isupper(i)){
-            result += convertNumberToLetter(storeForShift);
-        }
-        // If letter is lowercase
-        else {
-            result += tolower(convertNumberToLetter(storeForShift));
-        }
-    }
-
-    return result;
-}
-
-// Returns unshifted string using the top result from the statistical attack
-std::string Caesar::getDecodedStringWithTopFrequency(std::string encryptedText, int* topShifts)
-{
-    return unshift(encryptedText, topShifts[0]);
-}
-
-std::string Caesar::encrypt(){
-    std::string text;
-    int key;
-
-    text = DataManipulation::getUserInput("Please enter the file name:", "Please enter the text to encrypt:");
-
-    std::cout << "\nHow much would you like to shift the text?\n";
-
-    key = DataManipulation::getIntegerInput(0, 25);
-
-    return encrypt(text, key);
-}
-
-std::string Caesar::encrypt(std::string text, int shift){
-    int storeForShift;
-    std::string result = "";
-
-    for (char i : text){
-        // If there is a non letter, no shift is needed
-        if (!isalpha(i)){
-            result += i;
-            continue;
-        }
-
-        // Shift letter
-        storeForShift = convertLetterToNumber(toupper(i));
-        storeForShift += shift;
-        
-        // Account for shift overflowing
-        if (storeForShift > 25){
-            storeForShift -= LANGUAGE_LETTER_COUNT;
-        }
-        
-        // If letter is capital
-        if (isupper(i)){
-            result += convertNumberToLetter(storeForShift);
-        }
-        // If letter is lowercase
-        else {
-            result += tolower(convertNumberToLetter(storeForShift));
-        }
-    }
-    return result;
-}
+//////////////////////
+// Helper Functions //
+//////////////////////
 
 // Removes all non letter characters and capitalizes lowercase letters
 std::string Caesar::cleanText(std::string rawEncryptedText){
     std::string cleanText = "";
 
     for (char i : rawEncryptedText){
-        if (islower(i)){ // Capitalize the lower letters
+        // Capitalize the lower letters
+        if (islower(i)){
             cleanText += toupper(i);
         }
-        else if (isupper(i)){ // Include capital letters
+        // Include capital letters
+        else if (isupper(i)){
             cleanText += i;
         }
     }
 
     return cleanText;
+}
+
+// Returns an array with the frequency of each letter in a given string
+int* Caesar::getFrequencyOfLetters(std::string text){
+    // Create and initialize the return array
+    int* letterFrequency = new int[LANGUAGE_LETTER_COUNT];
+    for (int i = 0; i < LANGUAGE_LETTER_COUNT; i++){
+        letterFrequency[i] = 0;
+    }
+
+    // Count the amount of each letter
+    for (char i : text){
+        letterFrequency[convertLetterToNumber(toupper(i))]++;
+    }
+
+    return letterFrequency;
+}
+
+// Transforms a letter into its number in the alphabet 0 - 25
+int Caesar::convertLetterToNumber(char letter){
+    return letter - 65;
+}
+
+// Transforms a number 0 - 25 into its letter in the alphabet
+char Caesar::convertNumberToLetter(int number){
+    return number + 65;
 }
