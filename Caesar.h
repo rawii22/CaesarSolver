@@ -18,7 +18,7 @@ class Caesar
     public:
         // Main functions the user will use
         static void solveCaesar(std::string encryptedText, int numberOfResults);
-        static std::string getDecodedStringWithTopFrequency(std::string encryptedText, int* topShifts);
+        static std::string getMostLikelyDecryption(std::string encryptedText);
         static std::string decrypt(std::string ciphertext, int shift);
         static std::string encrypt();
         static std::string encrypt(std::string text, int shift);

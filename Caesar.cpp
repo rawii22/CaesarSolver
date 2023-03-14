@@ -27,9 +27,20 @@ void Caesar::solveCaesar(std::string encryptedText, int numberOfResults){
 }
 
 // Returns unshifted string using the top result from the statistical attack
-std::string Caesar::getDecodedStringWithTopFrequency(std::string encryptedText, int* topShifts)
-{
-    return decrypt(encryptedText, topShifts[0]);
+std::string Caesar::getMostLikelyDecryption(std::string encryptedText){
+    // Remove all non letters from the encrypted text
+    std::string cleanEncryptedText = cleanText(encryptedText);
+    // Get the correlation Frequencies for the clean text
+    double* correlationFrequencies = getCorrelationOfFrequencies(cleanEncryptedText);
+    // Get the indexs of the most likely results
+    int* topShifts = getTopShifts(correlationFrequencies, 1);
+    // Get the solution
+    std::string result = decrypt(encryptedText, topShifts[0]);
+
+    delete[] correlationFrequencies;
+    delete[] topShifts;
+
+    return result;
 }
 
 // When provided an text and a shift, it unshifts the text by that amount
