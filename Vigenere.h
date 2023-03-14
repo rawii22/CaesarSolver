@@ -32,7 +32,6 @@ class Vigenere
         static double ICCalculator(std::string text);
         static std::string* splitAlphabets(std::string cleanEncryptedText, int period);
 
-        static std::string cleanText(std::string rawEncryptedText);
         static int getHighestValueIndex(double* listOfValues, int sizeOfList);
         static void printLettersInBox(std::string text);
         static std::string combineTextWithKey(std::string text, std::string key);
