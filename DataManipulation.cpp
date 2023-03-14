@@ -136,13 +136,9 @@ char DataManipulation::getLetterInput(){
         // Grabs the character
         charInput = userInput[0];
 
-        // Check if the character is a lowercase letter
-        if (islower(charInput)){
+        // Check if the character letter and return it capitalized
+        if (isalpha(charInput)){
             return toupper(charInput);
-        }
-        // Check if the character is a capital letter
-        else if (isupper(charInput)){
-            return charInput;
         }
         // If not a letter
         std::cout << "\nPlease enter a valid option.\n";
