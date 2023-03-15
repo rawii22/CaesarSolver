@@ -199,7 +199,7 @@ std::string Vigenere::encrypt(){
     std::string text;
     std::string key;
 
-    text = DataManipulation::getUserInput("Please enter the file name:", "Please enter the text to encrypt:");
+    text = DataManipulation::getUserInput("Please enter the text to encrypt:");
 
     key = getKeyUserInput(text.length());
 

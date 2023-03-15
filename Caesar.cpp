@@ -83,7 +83,7 @@ std::string Caesar::encrypt(){
     std::string text;
     int key;
 
-    text = DataManipulation::getUserInput("Please enter the file name:", "Please enter the text to encrypt:");
+    text = DataManipulation::getUserInput("Please enter the text to encrypt:");
 
     std::cout << "\nHow much would you like to shift the text?\n";
 

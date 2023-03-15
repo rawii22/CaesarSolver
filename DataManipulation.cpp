@@ -50,26 +50,26 @@ void DataManipulation::writeStringToFile(std::string fileName, std::string strin
 // Asks if a user wants input from a file or from manual input
 // then prompts for file name and reads returns its contents
 // or prompts user for input and returns that
-std::string DataManipulation::getUserInput(std::string fileCustomMessage, std::string manualCustomMessage){
+std::string DataManipulation::getUserInput(std::string manualCustomMessage, std::string fileCustomMessage){
     std::string userInput = "";
 
     std::cout << "\nPlease make a selection\n";
-    std::cout << "1. Get input from file\n";
-    std::cout << "2. Get input from user\n";
+    std::cout << "1. Get input from user\n";
+    std::cout << "2. Get input from file\n";
 
-    // Reading from a file
+    // Manual user input
     if (getIntegerInput(1,2) == 1){
+        while (userInput.empty()){
+            std::cout << "\n" << manualCustomMessage << "\n> ";
+            getline(std::cin, userInput);
+        }
+    }
+    // Reading from a file
+    else {
         while (userInput.empty()){
             std::cout << "\n" << fileCustomMessage << "\n> ";
             getline(std::cin, userInput);
             userInput = readStringFromFile(userInput);
-        }
-    }
-    // Manual user input
-    else {
-        while (userInput.empty()){
-            std::cout << "\n" << manualCustomMessage << "\n> ";
-            getline(std::cin, userInput);
         }
     }
         

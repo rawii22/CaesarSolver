@@ -27,6 +27,6 @@ int main(){
         }
     }
     else {
-        Vigenere::solveVigenere(DataManipulation::getUserInput("Please enter the file name:", "Please enter a ciphertext:"));
+        Vigenere::solveVigenere(DataManipulation::getUserInput("Please enter a ciphertext:"));
     }
 }

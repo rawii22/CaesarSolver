@@ -28,6 +28,6 @@ int main(){
         }
     }
     else {
-        Caesar::solveCaesar(DataManipulation::getUserInput("Please enter the file name:", "Please enter a ciphertext:"), numberOfResults);
+        Caesar::solveCaesar(DataManipulation::getUserInput("Please enter a ciphertext:"), numberOfResults);
     }
 }
