@@ -258,7 +258,6 @@ double* Vigenere::calculateIdealPeriod(std::string cleanEncryptedText, int maxPe
     std::string* alphabets;
     double* periodsList = new double[maxPeriodChecked];
 
-
     for (int periodBeingChecked = 1; periodBeingChecked <= maxPeriodChecked; periodBeingChecked++){
         alphabets = splitAlphabets(cleanEncryptedText, periodBeingChecked);
         numberOfAlphabetsSuggestingPeriodOfOne = 0;

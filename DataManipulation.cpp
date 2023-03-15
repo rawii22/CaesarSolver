@@ -136,7 +136,7 @@ char DataManipulation::getLetterInput(){
         // Grabs the character
         charInput = userInput[0];
 
-        // Check if the character letter and return it capitalized
+        // Check if the character is a letter and return it capitalized
         if (isalpha(charInput)){
             return toupper(charInput);
         }

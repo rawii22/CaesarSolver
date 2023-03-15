@@ -20,7 +20,7 @@ int main(){
 
         std::cout << "\n\nWould you like to write the text to a file? Y/[N]\n";
         userInput = DataManipulation::getLetterInput();
-        if (userInput == 'Y' || userInput == 'y'){
+        if (userInput == 'Y'){
             std::string fileName;
             std::cout << "\nWhat file would you like to output to?\n> ";
             getline(std::cin, fileName);
